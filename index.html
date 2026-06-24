@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Reconciliation — Marios Mintzis Solutions</title>
+<title>Concord — Live Reconciliation · TopFX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -175,7 +175,7 @@ th[data-tip],.src[data-tip],.tipword{border-bottom:1px dotted #46586f;cursor:hel
 <body>
 
 <div class="bar"><div class="row">
-  <div class="logo"></div><div class="mark" style="font-family:Inter;letter-spacing:0;font-size:15px">Marios Mintzis <b>Solutions</b></div>
+  <div class="logo"></div><div class="mark">CON<b>CORD</b></div>
   <nav class="xnav" style="margin-left:16px"><a href="index.html" class="cur">▶ Live demo</a><a href="modules.html">▣ Dashboard</a><a href="docs.html">How it works</a><a href="glossary.html">Glossary</a></nav>
   <div class="chip" style="margin-left:auto">LIVE — runs in your browser</div>
   <div class="sp" id="topdate"></div>
@@ -185,7 +185,7 @@ th[data-tip],.src[data-tip],.tipword{border-bottom:1px dotted #46586f;cursor:hel
   <div class="intro">
     <p class="tagline">Same event · different systems · same truth</p>
     <h1>Reconcile three exports in one pass</h1>
-    <p class="lede">Drop in a <b>payment-provider</b>, <b>CRM</b>, and <b>cTrader</b> export — the system normalizes the
+    <p class="lede">Drop in a <b>payment-provider</b>, <b>CRM</b>, and <b>cTrader</b> export — Concord normalizes the
     different formats, matches every deposit and withdrawal across all three, and surfaces what doesn't agree:
     unmatched, duplicate, mismatched, and suspicious. <b>It runs here, live, on the data you give it.</b></p>
   </div>
@@ -250,7 +250,7 @@ th[data-tip],.src[data-tip],.tipword{border-bottom:1px dotted #46586f;cursor:hel
     bank statements (MT940/camt.053) and GL, with four-eyes controls and a full audit trail. Areas like exposure,
     client-money segregation, IB/partner and audit packs are <b>possible modules — to be confirmed against your real
     workflow</b>, not built here. We'd rather map your real process first than show numbers we invented.<br><br>
-    Marios Mintzis Solutions &nbsp;·&nbsp; <a href="modules.html">module map</a> &nbsp;·&nbsp;
+    Marios Mintzis Solutions Tech &nbsp;·&nbsp; <a href="modules.html">module map</a> &nbsp;·&nbsp;
     <a href="glossary.html">glossary — every term explained</a>
   </div>
 </div>
@@ -640,7 +640,7 @@ function openDrill(r){const L=r.legs;const [pc,pl]=PILL[r.verdict];const danger=
       <div class="lbl">The three systems — do they agree?</div>
       <div class="legs">${legHtml('Payment provider',L.psp,r.verdict==='REVIEW')}${legHtml('CRM',L.crm,r.verdict==='REVIEW')}${legHtml('cTrader',L.ct,r.verdict==='REVIEW')}</div>
       <div class="aibox ${danger?'danger':''}">
-        <div class="at">◆ What happened &amp; why</div>
+        <div class="at">◆ Concord · what happened &amp; why</div>
         <div class="why">${r.why}</div>
         <div class="act"><div class="al">Suggested next action</div>${r.action}</div>
         ${r.verdict==='UNMATCHED'?'<div class="conf2" style="color:var(--mut2)">no counterpart to score against — needs investigation</div>':`<div class="conf2">confidence <div class="cb"><i style="width:${r.confidence}%"></i></div> ${r.confidence}%</div>`}
