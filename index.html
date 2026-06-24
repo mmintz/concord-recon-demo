@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Concord — Live Reconciliation · TopFX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#090d14;--bg2:#0c121c;--surface:#111a26;--surface2:#16212f;--raise:#1a2636;
+  --line:#1d2a3a;--line2:#28384c;--ink:#e8eff8;--mut:#8a99ad;--mut2:#5e6e83;
+  --green:#2fd07e;--green2:#1f9c5c;--amber:#f5b14c;--red:#f6685e;--blue:#56a8ff;--violet:#9b8cff;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#1f2c3d;border-radius:6px;border:2px solid var(--bg)}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px 80px}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:20;background:rgba(9,13,20,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar .row{max-width:1140px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:13px}
+.logo{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--green),#1d8f57);position:relative;flex:0 0 auto}
+.logo::after{content:"";position:absolute;inset:6px;border:2px solid #08120c;border-radius:2px;border-right-color:transparent;border-bottom-color:transparent}
+.mark{font-family:var(--mono);font-weight:700;font-size:16px;letter-spacing:.13em}.mark b{color:var(--green)}
+.chip{font-size:11px;color:var(--amber);border:1px solid #5a4423;background:#2a1f0f;border-radius:5px;padding:3px 8px;font-weight:600}
+.bar .sp{margin-left:auto;font-size:12.5px;color:var(--mut);font-family:var(--mono)}
+
+h1{font-size:28px;margin:0;letter-spacing:-.02em;font-weight:700}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:3px}
+.bk[data-tip]{cursor:help}
+.lede{color:var(--mut);font-size:15px;margin:8px 0 0;max-width:680px}
+.lede b{color:var(--ink)}
+.intro{padding:34px 0 8px}
+.tagline{font-family:var(--mono);font-size:12.5px;color:var(--green);letter-spacing:.04em;margin:0 0 14px;text-transform:uppercase}
+
+/* upload */
+.uploads{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 0}
+.uz{background:var(--surface);border:1.5px dashed var(--line2);border-radius:13px;padding:18px 16px;text-align:center;transition:.2s;position:relative}
+.uz.drag{border-color:var(--green);background:#10241a}
+.uz.has{border-style:solid;border-color:#1e5236;background:#0f1f17;text-align:left}
+.uz .src{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut2);font-weight:700}
+.uz .ic{margin:9px 0 7px;color:var(--green);opacity:.92}
+.uz .ic svg{width:26px;height:26px;vertical-align:middle}
+.uz .hint{font-size:12.5px;color:var(--mut)}
+.uz .fname{font-family:var(--mono);font-size:12.5px;color:var(--green);margin-top:7px;word-break:break-all}
+.uz .meta{font-size:11.5px;color:var(--mut);font-family:var(--mono);margin-top:3px}
+.uz input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.uz .pick{color:var(--blue);font-size:12.5px;text-decoration:underline;display:inline-block;margin-top:6px}
+.uz .ok{position:absolute;top:12px;right:13px;color:var(--green);font-size:15px}
+
+.controls{display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+.btn{border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:#36506e;background:var(--surface2)}
+.btn.primary{background:#15331f;border-color:#1e6e3f;color:var(--green)}
+.btn.primary:hover{background:#184026}
+.btn.primary:disabled{opacity:.4;cursor:not-allowed;background:var(--surface);border-color:var(--line);color:var(--mut)}
+.btn.ghost{background:transparent}
+.privacy{font-size:12px;color:var(--mut2);margin-left:auto;display:flex;align-items:center;gap:6px}
+
+/* mapping panel */
+.mapping{margin-top:18px;display:none}
+.mapping.on{display:block}
+.mapping .mh{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:9px}
+.maps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mapcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 13px}
+.mapcard h4{margin:0 0 8px;font-size:12.5px;color:var(--ink);display:flex;align-items:center;gap:7px}
+.mapcard h4 .d{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.mrow{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;padding:3px 0;font-family:var(--mono)}
+.mrow .from{color:var(--mut2)}.mrow .to{color:var(--blue)}
+
+/* run / passes */
+.run{margin-top:26px;display:none}.run.on{display:block}
+.passes{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 18px}
+.pass{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #14202e;font-size:13.5px;opacity:0;transform:translateY(4px);transition:.3s}
+.pass:last-child{border:0}.pass.show{opacity:1;transform:none}
+.pass .pn{width:24px;height:24px;border-radius:6px;background:#13202d;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--green);flex:0 0 auto;font-family:var(--mono)}
+.pass .pl{flex:1}.pass .pl b{font-weight:600}.pass .pc{font-family:var(--mono);font-size:13px;color:var(--mut)}
+.pass.warn .pn{color:var(--amber);background:#241c0d}.pass.warn .pc{color:var(--amber)}
+
+/* results */
+.results{margin-top:24px;display:none}.results.on{display:block}
+.headline{background:linear-gradient(180deg,#0f2018,#0d1a14);border:1px solid #1e5236;border-radius:14px;padding:20px 22px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.headline .big{font-family:var(--mono);font-size:52px;font-weight:700;color:var(--green);line-height:1;letter-spacing:-.03em}
+.headline .ht{font-size:14px;color:var(--ink)}.headline .ht b{color:var(--green)}.headline .ht span{color:var(--mut);display:block;font-size:12.5px;margin-top:3px}
+.headline .exc{margin-left:auto;text-align:right}
+.headline .exc .en{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--amber)}
+.headline .exc .el{font-size:12.5px;color:var(--mut)}
+
+.buckets{display:flex;gap:9px;margin:18px 0 14px;flex-wrap:wrap}
+.bk{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:9px 13px;display:flex;align-items:center;gap:9px;font-size:13px}
+.bk.on{border-color:var(--blue);background:#0f1f30}
+.bk .bn{font-family:var(--mono);font-weight:700;font-size:15px}
+.bk .bd{width:8px;height:8px;border-radius:50%}
+.bk.green .bd{background:var(--green)}.bk.amber .bd{background:var(--amber)}.bk.red .bd{background:var(--red)}.bk.violet .bd{background:var(--violet)}.bk.grey .bd{background:var(--mut2)}
+.bk .bl{color:var(--mut)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut2);font-weight:600;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
+td{padding:11px 14px;border-bottom:1px solid #14202e}
+tr.rrow{cursor:pointer}tr.rrow:hover td{background:#13202d}
+.legdots{display:inline-flex;gap:4px}
+.ld{width:7px;height:7px;border-radius:50%;background:#2a3a4f}.ld.on{background:var(--green)}.ld.miss{background:#3a2228;box-shadow:inset 0 0 0 1px var(--red)}
+.amt{font-family:var(--mono);text-align:right;font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;border-radius:20px;padding:3px 9px;white-space:nowrap}
+.v-match{background:#10271a;color:var(--green)}.v-tol{background:#241c0d;color:var(--amber)}.v-rev{background:#1f1a33;color:var(--violet)}
+.v-dup{background:#2a1f0d;color:var(--amber)}.v-susp{background:#2a1410;color:var(--red)}.v-un{background:#1a222e;color:var(--mut)}
+.conf{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.cbar{display:inline-block;width:36px;height:5px;background:#16222f;border-radius:3px;overflow:hidden;vertical-align:middle;margin-right:6px}
+.cbar i{display:block;height:100%;background:var(--green)}
+.sevtag{font-size:10px;font-weight:700;color:var(--red);background:#2a1410;border:1px solid #5a2420;border-radius:4px;padding:1px 6px;margin-left:7px;letter-spacing:.03em}
+
+/* drilldown */
+.scrim{position:fixed;inset:0;background:#04070bcc;backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.25s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drill{position:fixed;top:0;right:0;width:min(640px,96vw);height:100vh;background:var(--bg2);border-left:1px solid var(--line2);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:41;overflow-y:auto;box-shadow:-20px 0 60px #0009}
+.drill.on{transform:none}
+.dh{position:sticky;top:0;background:var(--bg2);border-bottom:1px solid var(--line);padding:16px 20px;z-index:2}
+.dh .bid{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.dh h2{font-size:18px;margin:6px 0 0;display:flex;align-items:center;gap:10px}
+.dh .close{position:absolute;top:15px;right:16px;width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--surface);color:var(--mut);font-size:17px}
+.db{padding:18px 20px 50px}
+.sevbanner{border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start}
+.sevbanner.high{background:#1f1011;border:1px solid #5a2420;color:#f8b4ae}
+.sevbanner.high b{color:#fff}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut2);font-weight:600;margin:16px 0 9px}
+.legs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.leg{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.leg.miss{border-style:dashed;border-color:#5a2420;background:#170d0f}
+.leg .lt{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut2);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.leg .lt .d{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.leg.miss .lt .d{background:var(--red)}
+.kv{font-size:11.5px;padding:3px 0;border-bottom:1px solid #131f2c}.kv:last-child{border:0}
+.kv .k{color:var(--mut2);display:block;font-size:10px;text-transform:uppercase;letter-spacing:.03em}
+.kv .v{font-family:var(--mono);color:var(--ink);word-break:break-all}
+.kv.hl .v{color:var(--amber)}
+.missnote{color:var(--red);font-size:12px;text-align:center;padding:18px 6px}
+.aibox{background:linear-gradient(180deg,#101c2e,#0e1826);border:1px solid #1f3550;border-radius:12px;padding:14px 15px;margin:16px 0}
+.aibox .at{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--blue);font-weight:600;letter-spacing:.03em;text-transform:uppercase;margin-bottom:9px}
+.aibox .why{font-size:13.5px;line-height:1.55}.aibox .why b{color:#fff}
+.aibox .act{margin-top:11px;padding-top:11px;border-top:1px solid #1c2c40;font-size:13px}
+.aibox .act .al{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut2);font-weight:700;margin-bottom:4px}
+.aibox .conf2{display:flex;align-items:center;gap:9px;margin-top:11px;font-size:12px;color:var(--mut);font-family:var(--mono)}
+.conf2 .cb{flex:1;height:6px;background:#16222f;border-radius:4px;overflow:hidden}.conf2 .cb i{display:block;height:100%;background:linear-gradient(90deg,#2f7fd0,#56a8ff)}
+.aibox.danger{background:linear-gradient(180deg,#251015,#1a0c10);border-color:#5a2420}.aibox.danger .at{color:var(--red)}.aibox.danger .conf2 .cb i{background:linear-gradient(90deg,#b23f3a,#f6685e)}
+
+.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut2);font-size:12px;line-height:1.6}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#16212f;border:1px solid var(--line2);border-radius:10px;padding:12px 18px;font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:60}
+.toast.on{opacity:1;transform:translateX(-50%)}.toast b{color:var(--green)}
+/* tooltips — a plain-English explanation on every term */
+th[data-tip],.src[data-tip],.tipword{border-bottom:1px dotted #46586f;cursor:help}
+.pill[data-tip]{cursor:help}
+#tipbox{position:fixed;z-index:90;max-width:280px;background:#0e1a28;border:1px solid #2c425e;color:#d4deeb;font-size:12px;line-height:1.45;padding:9px 12px;border-radius:9px;box-shadow:0 10px 34px #000a;pointer-events:none;opacity:0;transition:opacity .12s}
+#tipbox.on{opacity:1}#tipbox b{color:var(--green)}
+.rowhint{font-size:12.5px;color:var(--mut);margin:-2px 0 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.rowhint b{color:var(--ink)}.rowhint .legend{display:inline-flex;align-items:center;gap:4px;color:var(--mut2);font-size:12px}
+.rowhint .ld{width:7px;height:7px;border-radius:50%;display:inline-block;background:#2a3a4f}
+.rowhint .ld.on{background:var(--green)}.rowhint .ld.miss{background:#3a2228;box-shadow:inset 0 0 0 1px var(--red)}
+.foot a{color:var(--blue);text-decoration:none}.foot a:hover{text-decoration:underline}
+.foot b{color:var(--ink)}
+.bar .row{flex-wrap:wrap;row-gap:8px}
+.xnav{display:flex;gap:3px;flex-wrap:wrap}
+.xnav a{font-size:12.5px;color:var(--mut);padding:5px 11px;border-radius:6px;text-decoration:none;white-space:nowrap}
+.xnav a:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.xnav a.cur{color:var(--green);background:#14241b}
+@media(max-width:760px){.uploads,.maps{grid-template-columns:1fr}.legs{grid-template-columns:1fr}.headline .exc{margin-left:0}}
+@media print{.bar,.controls,.buckets,.uploads,.mapping,.run,.privacy,.foot{display:none!important}body{background:#fff;color:#000}}
+</style></head>
+<body>
+
+<div class="bar"><div class="row">
+  <div class="logo"></div><div class="mark">CON<b>CORD</b></div>
+  <nav class="xnav" style="margin-left:16px"><a href="index.html" class="cur">▶ Live demo</a><a href="modules.html">▣ Dashboard</a><a href="docs.html">How it works</a><a href="glossary.html">Glossary</a></nav>
+  <div class="chip" style="margin-left:auto">LIVE — runs in your browser</div>
+  <div class="sp" id="topdate"></div>
+</div></div>
+
+<div class="wrap">
+  <div class="intro">
+    <p class="tagline">Same event · different systems · same truth</p>
+    <h1>Reconcile three exports in one pass</h1>
+    <p class="lede">Drop in a <b>payment-provider</b>, <b>CRM</b>, and <b>cTrader</b> export — Concord normalizes the
+    different formats, matches every deposit and withdrawal across all three, and surfaces what doesn't agree:
+    unmatched, duplicate, mismatched, and suspicious. <b>It runs here, live, on the data you give it.</b></p>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="uploads" id="uploads">
+    <div class="uz" data-src="psp"><span class="ok" style="display:none">✓</span>
+      <div class="src" data-tip="Payment service provider — the rail client money flows in and out on (Skrill, Neteller, cards, bank).">Payment provider</div><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/></svg></div>
+      <div class="hint">Skrill / Neteller / card settlement</div>
+      <div class="pick">drop CSV or browse</div>
+      <input type="file" accept=".csv" data-src="psp"></div>
+    <div class="uz" data-src="crm"><span class="ok" style="display:none">✓</span>
+      <div class="src" data-tip="Your back-office system of record for every client deposit and withdrawal request.">CRM / back-office</div><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13M14 5l3 3-3 3"/><path d="M20 16H7M10 13l-3 3 3 3"/></svg></div>
+      <div class="hint">deposits &amp; withdrawals export</div>
+      <div class="pick">drop CSV or browse</div>
+      <input type="file" accept=".csv" data-src="crm"></div>
+    <div class="uz" data-src="ct"><span class="ok" style="display:none">✓</span>
+      <div class="src" data-tip="The trading platform (by Spotware) — where client balances are credited and debited.">cTrader</div><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 3v4M8 17v4M16 3v3M16 16v5"/><rect x="6" y="7" width="4" height="10" rx="1"/><rect x="14" y="6" width="4" height="10" rx="1"/></svg></div>
+      <div class="hint">balance operations export</div>
+      <div class="pick">drop CSV or browse</div>
+      <input type="file" accept=".csv" data-src="ct"></div>
+  </div>
+
+  <div class="controls">
+    <button class="btn primary" id="samplebtn">Load TopFX sample set ▸</button>
+    <button class="btn" id="runbtn" disabled>Run reconciliation</button>
+    <button class="btn ghost" id="resetbtn" style="display:none">Reset</button>
+    <span class="privacy">New here? Load the sample set to watch it run. &nbsp;·&nbsp; Nothing is uploaded — it all runs in your browser.</span>
+  </div>
+
+  <!-- MAPPING -->
+  <div class="mapping" id="mapping">
+    <div class="mh">Columns detected &amp; mapped to <span class="tipword" data-tip="Each system names things differently (payment_ref vs crm_ref vs comment; value vs amount vs delta_cents). We read all three into one common shape so they can be compared.">a canonical model</span></div>
+    <div class="maps" id="maps"></div>
+  </div>
+
+  <!-- RUN -->
+  <div class="run" id="run"><div class="passes" id="passes"></div></div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="headline">
+      <div class="big" id="hRate">—</div>
+      <div class="ht"><b id="hMatched">—</b> reconciled or in transit<span id="hSub">of the payment-provider records</span></div>
+      <div class="exc"><div class="en" id="hExc">—</div><div class="el">exceptions to review</div></div>
+    </div>
+    <div class="buckets" id="buckets"></div>
+    <div class="rowhint"><span><b>Click any row</b> to see all three systems side by side and the suggested action.</span>
+      <span class="legend"><span class="ld on"></span><span class="ld on"></span><span class="ld on"></span> in all three &nbsp; · &nbsp; <span class="ld on"></span><span class="ld miss"></span><span class="ld miss"></span> missing in some &nbsp;—&nbsp; PSP · CRM · cTrader</span></div>
+    <div class="controls" style="margin-top:0 0 12px">
+      <button class="btn" id="exportbtn">↓&nbsp; Export report (CSV)</button>
+      <button class="btn ghost" id="printbtn">Print summary</button>
+    </div>
+    <div class="card"><table><thead><tr>
+      <th data-tip="The shared ID used to tie the same payment together across systems.">Reference</th><th data-tip="The account holder.">Client</th><th style="text-align:right" data-tip="The transaction value, in its original currency.">Amount</th><th data-tip="Which of the three systems hold this record — payment provider · CRM · cTrader. Filled dot = present, hollow = missing.">Systems</th><th data-tip="How the transaction reconciled across the three systems.">Result</th><th data-tip="How strong the match is — a rule-based score, not a guarantee.">Confidence</th>
+    </tr></thead><tbody id="rows"></tbody></table></div>
+  </div>
+
+  <div class="foot">
+    <b>This is a working concept, not a finished system.</b> The demo runs real matching on the sample data you load —
+    nothing is uploaded, it all runs in your browser. In production it would connect to cTrader (Open API), your PSPs,
+    bank statements (MT940/camt.053) and GL, with four-eyes controls and a full audit trail. Areas like exposure,
+    client-money segregation, IB/partner and audit packs are <b>possible modules — to be confirmed against your real
+    workflow</b>, not built here. We'd rather map your real process first than show numbers we invented.<br><br>
+    Marios Mintzis Solutions Tech &nbsp;·&nbsp; <a href="modules.html">module map</a> &nbsp;·&nbsp;
+    <a href="glossary.html">glossary — every term explained</a>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drill" id="drill"></aside>
+<div class="toast" id="toast"></div>
+
+<!-- embedded TopFX sample set (synthetic) -->
+<script type="text/plain" id="s-psp">psp_txn_id,payment_ref,sender_name,account,value,ccy,type,processed_at,state
+PSP-001,INT-2024-001,ANNA GEORGIOU,ACC-1001,2500.00,USD,DEPOSIT,10/03/2024 09:15,SETTLED
+PSP-002,INT-2024-002,NIKOS PAPADOPOULOS,ACC-1002,987.50,EUR,DEPOSIT,11/03/2024 14:00,SETTLED
+PSP-003,INT-2024-003,ELENA STAVRIDOU,ACC-1003,5000.00,GBP,DEPOSIT,12/03/2024 16:55,SETTLED
+PSP-004,INT-2024-004,MARCO VITALI,ACC-1004,3680.00,USD,DEPOSIT,13/03/2024 10:30,SETTLED
+PSP-005A,INT-2024-005,SOFIA IOANNIDOU,ACC-1005,750.00,EUR,DEPOSIT,14/03/2024 11:02,SETTLED
+PSP-005B,INT-2024-005B,SOFIA IOANNIDOU,ACC-1005,750.00,EUR,DEPOSIT,14/03/2024 11:05,SETTLED
+PSP-006A,WD-2024-006,PETROS HADJIS,ACC-1006,4200.00,USD,PAYOUT,15/03/2024 08:01,SETTLED
+PSP-006B,WD-2024-006B,PETROS HADJIS,ACC-1006,4200.00,USD,PAYOUT,15/03/2024 08:23,SETTLED
+PSP-007,INT-2024-007,YIANNA CHRISTOU,ACC-1007,1350.00,USD,DEPOSIT,16/03/2024 13:00,SETTLED
+PSP-008,INT-2024-008,DIMITRIS ANTONIOU,ACC-1008,8900.00,GBP,DEPOSIT,17/03/2024 17:45,SETTLED
+PSP-008B,INT-2024-008B,DIMITRIS ANTONIOU,ACC-1008,2000.00,GBP,DEPOSIT,17/03/2024 09:10,SETTLED
+PSP-008C,INT-2024-008C,DIMITRIS ANTONIOU,ACC-1008,3100.00,GBP,DEPOSIT,17/03/2024 12:30,SETTLED
+PSP-101,INT-2024-101,MARIA CONSTANTINOU,ACC-1101,1500.00,EUR,DEPOSIT,18/03/2024 08:00,SETTLED
+PSP-102,INT-2024-102,ANDREAS LOIZOU,ACC-1102,3200.00,USD,DEPOSIT,19/03/2024 09:07,SETTLED
+PSP-103,INT-2024-103,CHRISTINA MICHAEL,ACC-1103,800.00,EUR,DEPOSIT,20/03/2024 10:14,SETTLED
+PSP-104,INT-2024-104,KYRIAKOS SAVVA,ACC-1104,4500.00,USD,DEPOSIT,18/03/2024 11:21,SETTLED
+PSP-105,INT-2024-105,DESPINA NICOLAOU,ACC-1105,2750.00,GBP,DEPOSIT,19/03/2024 12:28,SETTLED
+PSP-106,INT-2024-106,PANOS DEMETRIOU,ACC-1106,600.00,EUR,DEPOSIT,20/03/2024 13:35,SETTLED
+PSP-107,INT-2024-107,ELENI VASILEIOU,ACC-1107,5200.00,USD,DEPOSIT,18/03/2024 14:42,SETTLED
+PSP-108,INT-2024-108,COSTAS PAPADAKIS,ACC-1108,1850.00,EUR,DEPOSIT,19/03/2024 15:49,SETTLED
+PSP-109,INT-2024-109,IRINI THEODOROU,ACC-1109,950.00,GBP,DEPOSIT,20/03/2024 16:56,SETTLED
+PSP-110,INT-2024-110,STELIOS KYPRIANOU,ACC-1110,7000.00,USD,DEPOSIT,18/03/2024 08:03,SETTLED
+PSP-111,INT-2024-111,NATALIA MAKRI,ACC-1111,430.00,EUR,DEPOSIT,19/03/2024 09:10,SETTLED
+PSP-112,INT-2024-112,ANTONIS FOTIOU,ACC-1112,2200.00,USD,DEPOSIT,20/03/2024 10:17,SETTLED
+PSP-113,INT-2024-113,MARINA HARALAMBOUS,ACC-1113,1320.00,EUR,DEPOSIT,18/03/2024 11:24,SETTLED
+PSP-114,INT-2024-114,NICHOLAS PITTAS,ACC-1114,6100.00,GBP,DEPOSIT,19/03/2024 12:31,SETTLED
+PSP-115,INT-2024-115,SANDRA REISER,ACC-1115,890.00,EUR,DEPOSIT,20/03/2024 13:38,SETTLED
+PSP-116,INT-2024-116,JOHANN MUELLER,ACC-1116,3450.00,USD,DEPOSIT,18/03/2024 14:45,SETTLED
+PSP-117,INT-2024-117,LUCA RICCI,ACC-1117,1675.00,EUR,DEPOSIT,19/03/2024 15:52,SETTLED
+PSP-118,INT-2024-118,NATASHA PETROVA,ACC-1118,2900.00,USD,DEPOSIT,20/03/2024 16:59,SETTLED</script>
+
+<script type="text/plain" id="s-crm">crm_ref,client_name,login,txn_type,amount,currency,value_date,fx_rate,status
+INT-2024-001,ANNA GEORGIOU,ACC-1001,DEPOSIT,2500.00,USD,2024-03-10,,APPROVED
+INT-2024-002,NIKOS PAPADOPOULOS,ACC-1002,DEPOSIT,1000.00,EUR,2024-03-11,,PENDING_RECEIPT
+INT-2024-003,ELENA STAVRIDOU,ACC-1003,DEPOSIT,5000.00,GBP,2024-03-13,,PENDING_RECEIPT
+INT-2024-004,MARCO VITALI,ACC-1004,DEPOSIT,3402.40,EUR,2024-03-13,1.0817,APPROVED
+INT-2024-005,SOFIA IOANNIDOU,ACC-1005,DEPOSIT,750.00,EUR,2024-03-14,,APPROVED
+WD-2024-006,PETROS HADJIS,ACC-1006,WITHDRAWAL,4200.00,USD,2024-03-15,,APPROVED
+INT-2024-007,YIANNA CHRISTOU,ACC-1007,DEPOSIT,1530.00,USD,2024-03-16,,APPROVED
+INT-2024-009,GEORGIOS NEOPHYTOU,ACC-1009,DEPOSIT,1200.00,EUR,2024-03-18,,PENDING_RECEIPT
+INT-2024-101,MARIA CONSTANTINOU,ACC-1101,DEPOSIT,1500.00,EUR,2024-03-18,,APPROVED
+INT-2024-102,ANDREAS LOIZOU,ACC-1102,DEPOSIT,3200.00,USD,2024-03-19,,APPROVED
+INT-2024-103,CHRISTINA MICHAEL,ACC-1103,DEPOSIT,800.00,EUR,2024-03-20,,APPROVED
+INT-2024-104,KYRIAKOS SAVVA,ACC-1104,DEPOSIT,4500.00,USD,2024-03-18,,APPROVED
+INT-2024-105,DESPINA NICOLAOU,ACC-1105,DEPOSIT,2750.00,GBP,2024-03-19,,APPROVED
+INT-2024-106,PANOS DEMETRIOU,ACC-1106,DEPOSIT,600.00,EUR,2024-03-20,,APPROVED
+INT-2024-107,ELENI VASILEIOU,ACC-1107,DEPOSIT,5200.00,USD,2024-03-18,,APPROVED
+INT-2024-108,COSTAS PAPADAKIS,ACC-1108,DEPOSIT,1850.00,EUR,2024-03-19,,APPROVED
+INT-2024-109,IRINI THEODOROU,ACC-1109,DEPOSIT,950.00,GBP,2024-03-20,,APPROVED
+INT-2024-110,STELIOS KYPRIANOU,ACC-1110,DEPOSIT,7000.00,USD,2024-03-18,,APPROVED
+INT-2024-111,NATALIA MAKRI,ACC-1111,DEPOSIT,430.00,EUR,2024-03-19,,APPROVED
+INT-2024-112,ANTONIS FOTIOU,ACC-1112,DEPOSIT,2200.00,USD,2024-03-20,,APPROVED
+INT-2024-113,MARINA HARALAMBOUS,ACC-1113,DEPOSIT,1320.00,EUR,2024-03-18,,APPROVED
+INT-2024-114,NICHOLAS PITTAS,ACC-1114,DEPOSIT,6100.00,GBP,2024-03-19,,APPROVED
+INT-2024-115,SANDRA REISER,ACC-1115,DEPOSIT,890.00,EUR,2024-03-20,,APPROVED
+INT-2024-116,JOHANN MUELLER,ACC-1116,DEPOSIT,3450.00,USD,2024-03-18,,APPROVED
+INT-2024-117,LUCA RICCI,ACC-1117,DEPOSIT,1675.00,EUR,2024-03-19,,APPROVED
+INT-2024-118,NATASHA PETROVA,ACC-1118,DEPOSIT,2900.00,USD,2024-03-20,,APPROVED</script>
+
+<script type="text/plain" id="s-ct">balance_id,ctid_account,operation,delta_cents,currency,server_time,comment
+BH-9901,ACC-1001,BALANCE_DEPOSIT,250000,USD,2024-03-10 09:22:00,INT-2024-001
+BH-9902,ACC-1002,BALANCE_DEPOSIT,98750,EUR,2024-03-11 14:05:00,INT-2024-002
+BH-9904,ACC-1004,BALANCE_DEPOSIT,340240,EUR,2024-03-13 10:45:00,INT-2024-004
+BH-9905,ACC-1005,BALANCE_DEPOSIT,75000,EUR,2024-03-14 11:03:00,INT-2024-005
+BH-9906,ACC-1006,BALANCE_WITHDRAW,-420000,USD,2024-03-15 08:02:00,WD-2024-006
+BH-9907,ACC-1007,BALANCE_DEPOSIT,153000,USD,2024-03-16 13:10:00,INT-2024-007
+BH-9910,ACC-1010,BALANCE_DEPOSIT,300000,USD,2024-03-18 10:00:00,
+BH-9920,ACC-1101,BALANCE_DEPOSIT,150000,EUR,2024-03-18 08:06:00,INT-2024-101
+BH-9921,ACC-1102,BALANCE_DEPOSIT,320000,USD,2024-03-19 09:13:00,INT-2024-102
+BH-9922,ACC-1103,BALANCE_DEPOSIT,80000,EUR,2024-03-20 10:20:00,INT-2024-103
+BH-9923,ACC-1104,BALANCE_DEPOSIT,450000,USD,2024-03-18 11:27:00,INT-2024-104
+BH-9924,ACC-1105,BALANCE_DEPOSIT,275000,GBP,2024-03-19 12:34:00,
+BH-9925,ACC-1106,BALANCE_DEPOSIT,60000,EUR,2024-03-20 13:41:00,INT-2024-106
+BH-9926,ACC-1107,BALANCE_DEPOSIT,520000,USD,2024-03-18 14:48:00,INT-2024-107
+BH-9927,ACC-1108,BALANCE_DEPOSIT,185000,EUR,2024-03-19 15:55:00,INT-2024-108
+BH-9928,ACC-1109,BALANCE_DEPOSIT,95000,GBP,2024-03-20 16:02:00,INT-2024-109
+BH-9929,ACC-1110,BALANCE_DEPOSIT,700000,USD,2024-03-18 08:09:00,INT-2024-110
+BH-9930,ACC-1111,BALANCE_DEPOSIT,43000,EUR,2024-03-19 09:16:00,INT-2024-111
+BH-9931,ACC-1112,BALANCE_DEPOSIT,220000,USD,2024-03-20 10:23:00,
+BH-9932,ACC-1113,BALANCE_DEPOSIT,132000,EUR,2024-03-18 11:30:00,INT-2024-113
+BH-9933,ACC-1114,BALANCE_DEPOSIT,610000,GBP,2024-03-19 12:37:00,INT-2024-114
+BH-9934,ACC-1115,BALANCE_DEPOSIT,89000,EUR,2024-03-20 13:44:00,INT-2024-115
+BH-9935,ACC-1116,BALANCE_DEPOSIT,345000,USD,2024-03-18 14:51:00,INT-2024-116
+BH-9936,ACC-1117,BALANCE_DEPOSIT,167500,EUR,2024-03-19 15:58:00,INT-2024-117
+BH-9937,ACC-1118,BALANCE_DEPOSIT,290000,USD,2024-03-20 16:05:00,INT-2024-118</script>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const files={psp:null,crm:null,ct:null};
+
+/* ---------- tooltips (plain-English on every term) ---------- */
+const tipbox=document.createElement('div');tipbox.id='tipbox';document.body.appendChild(tipbox);
+document.addEventListener('mouseover',e=>{const el=e.target.closest('[data-tip]');if(!el)return;tipbox.innerHTML=el.dataset.tip;tipbox.classList.add('on');posTip(e);});
+document.addEventListener('mousemove',e=>{if(tipbox.classList.contains('on'))posTip(e);});
+document.addEventListener('mouseout',e=>{if(e.target.closest('[data-tip]'))tipbox.classList.remove('on');});
+function posTip(e){const x=Math.min(e.clientX+14,innerWidth-tipbox.offsetWidth-14);const y=Math.min(e.clientY+18,innerHeight-tipbox.offsetHeight-14);tipbox.style.left=Math.max(8,x)+'px';tipbox.style.top=Math.max(8,y)+'px';}
+const TIP={MATCHED:'Found in every system and the figures agree.',TOLERANCE:'Matched, but with a small expected difference — a processing fee, FX rounding, or a settlement-day gap.',REVIEW:'The reference matches but the amounts disagree by more than a fee — a person should check it.',DUPLICATE:'The same payment recorded or processed more than once.',SUSPICIOUS:'A pattern that may be a real loss or error (e.g. a payout sent twice) — flagged for urgent review.',UNMATCHED:'Exists in one system with no matching record in the others.'};
+
+/* ---------- CSV ---------- */
+function sniffDelim(h){const c={',':(h.match(/,/g)||[]).length,';':(h.match(/;/g)||[]).length,'\t':(h.match(/\t/g)||[]).length};
+  return Object.keys(c).reduce((a,b)=>c[b]>c[a]?b:a,',');}   // EU Excel often exports semicolons
+function parseCSV(text){
+  const lines=text.replace(/^﻿/,'').replace(/\r/g,'').split('\n').filter(l=>l.trim().length);
+  if(!lines.length) throw new Error('This file looks empty.');
+  const delim=sniffDelim(lines[0]);
+  const head=splitCSVLine(lines[0],delim).map(h=>h.trim());
+  if(head.length<2) throw new Error("Couldn't read columns — is this a comma- or semicolon-separated CSV?");
+  return lines.slice(1).map(l=>{
+    const cells=splitCSVLine(l,delim); const o={};
+    head.forEach((h,i)=>o[h]=(cells[i]??'').trim()); return o;
+  });
+}
+function splitCSVLine(l,delim){const D=delim||',';const out=[];let cur='',q=false;for(let i=0;i<l.length;i++){const ch=l[i];
+  if(ch==='"'){if(q&&l[i+1]==='"'){cur+='"';i++;}else q=!q;}     // "" = escaped quote
+  else if(ch===D&&!q){out.push(cur);cur='';}else cur+=ch;}out.push(cur);return out;}
+
+/* ---------- normalize ---------- */
+const MAP={
+  psp:{ref:'payment_ref',id:'psp_txn_id',client:'sender_name',account:'account',amount:'value',ccy:'ccy',dir:'type',date:'processed_at',status:'state'},
+  crm:{ref:'crm_ref',id:'crm_ref',client:'client_name',account:'login',amount:'amount',ccy:'currency',dir:'txn_type',date:'value_date',status:'status',fx:'fx_rate'},
+  ct:{ref:'comment',id:'balance_id',client:'',account:'ctid_account',amount:'delta_cents',ccy:'currency',dir:'operation',date:'server_time',status:''}
+};
+const DIRIN=['DEPOSIT','BALANCE_DEPOSIT'];
+function parseDate(s){
+  if(!s)return null;s=s.trim();
+  let m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/); // DD/MM/YYYY HH:MM
+  if(m){let dd=+m[1],mm=+m[2];if(mm>12&&dd<=12){const t=dd;dd=mm;mm=t;} // tolerate MM/DD if month>12
+    return Date.UTC(+m[3],mm-1,dd,+(m[4]||12),+(m[5]||0));}
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}):?(\d{2})?)?/); // YYYY-MM-DD [HH:MM:SS]
+  if(m)return Date.UTC(+m[1],+m[2]-1,+m[3],+(m[4]||12),+(m[5]||0),+(m[6]||0));
+  const t=Date.parse(s);return isNaN(t)?null:t;
+}
+function parseAmount(v){
+  let s=String(v==null?'':v).trim().replace(/[^0-9.,\-]/g,'');
+  if(/,/.test(s)&&s.lastIndexOf(',')>s.lastIndexOf('.')) s=s.replace(/\./g,'').replace(',','.'); // EU: 2.500,00 -> 2500.00
+  else s=s.replace(/,/g,'');                                                                     // US thousands: 2,500.00
+  return parseFloat(s)||0;
+}
+function normalize(rows,src){
+  const m=MAP[src];
+  return rows.map(r=>{
+    let amt=parseAmount(r[m.amount]);
+    if(src==='ct')amt=Number.isInteger(amt)?Math.abs(amt)/100:Math.abs(amt); // delta_cents is integer cents; decimals = already units
+    const dir=DIRIN.includes((r[m.dir]||'').toUpperCase())?'IN':'OUT';
+    return {src,id:r[m.id]||'',ref:(r[m.ref]||'').trim().toUpperCase(),
+      client:(r[m.client]||'').trim(),account:(r[m.account]||'').trim().toUpperCase(),
+      amount:amt,ccy:(r[m.ccy]||'').trim().toUpperCase(),dir,ts:parseDate(r[m.date]),
+      date:r[m.date]||'',status:r[m.status]||'',fx:m.fx?(r[m.fx]||''):'',raw:r,matched:false};
+  });
+}
+
+/* ---------- matcher ---------- */
+const ABS=2.0,PCT=0.015,FXT=0.02,DAYMS=86400000,DUPWIN=30*60000;
+function jaro(s1,s2){if(s1===s2)return 1;const l1=s1.length,l2=s2.length;if(!l1||!l2)return 0;
+  const md=Math.max(0,Math.floor(Math.max(l1,l2)/2)-1);const m1=Array(l1).fill(0),m2=Array(l2).fill(0);let m=0;
+  for(let i=0;i<l1;i++){const lo=Math.max(0,i-md),hi=Math.min(i+md+1,l2);for(let j=lo;j<hi;j++)if(!m2[j]&&s1[i]===s2[j]){m1[i]=m2[j]=1;m++;break;}}
+  if(!m)return 0;let t=0,k=0;for(let i=0;i<l1;i++)if(m1[i]){while(!m2[k])k++;if(s1[i]!==s2[k])t++;k++;}t/=2;
+  return(m/l1+m/l2+(m-t)/m)/3;}
+function jw(a,b){a=(a||'').toUpperCase();b=(b||'').toUpperCase();const j=jaro(a,b);let p=0;while(p<4&&a[p]&&a[p]===b[p])p++;return j+p*0.1*(1-j);}
+
+function reconcile(psp,crm,ct){
+  const passes={exact:0,composite:0,tolerance:0,duplicate:0,suspicious:0,unmatched:0,review:0};
+  const results=[];
+  // Pass A: flag PSP repeats that EXCEED the authorised CRM requests. Check the CRM FIRST so we never assert
+  // something we didn't verify (two legitimate same-amount payments, each with its own CRM request, must NOT flag).
+  const crmKey={};crm.forEach(r=>{const k=r.account+'|'+r.amount.toFixed(2)+'|'+r.ccy+'|'+r.dir;crmKey[k]=(crmKey[k]||0)+1;});
+  const byKey={};
+  psp.forEach(r=>{const k=r.account+'|'+r.amount.toFixed(2)+'|'+r.ccy+'|'+r.dir;(byKey[k]=byKey[k]||[]).push(r);});
+  Object.entries(byKey).forEach(([k,g])=>{if(g.length<2)return;g.sort((a,b)=>(a.ts||0)-(b.ts||0));
+    const auth=crmKey[k]||0;                                  // how many CRM requests authorise this account+amount
+    for(let i=Math.max(1,auth);i<g.length;i++){              // rows beyond the authorised count are the excess
+      if(g[i].ts!=null&&g[i-1].ts!=null&&g[i].ts-g[i-1].ts>DUPWIN)continue;  // far apart in time -> normal unmatched, not a dup
+      g[i]._exc=g[i].dir==='IN'?'DUPLICATE':'DOUBLE_WITHDRAWAL';g[i]._of=g[0].id;g[i]._ofTs=g[0].ts;g[i]._auth=auth;g[i]._n=g.length;}});
+
+  const crmByRef={};crm.forEach(r=>{if(r.ref)crmByRef[r.ref]=r;});
+  const ctByRef={};ct.forEach(r=>{if(r.ref)ctByRef[r.ref]=r;});
+
+  // Pass B: PSP-driven matching
+  psp.forEach(p=>{
+    if(p._exc){ // duplicate or double-withdrawal
+      p.matched=true;
+      const dup=p._exc==='DUPLICATE';
+      const authTxt=p._auth===0?'no matching request':(p._auth===1?'only one matching request':'only '+p._auth+' matching requests');
+      const gap=(p.ts!=null&&p._ofTs!=null)?` ~${Math.round((p.ts-p._ofTs)/60000)} min apart`:'';
+      results.push(mk(dup?'DUPLICATE':'SUSPICIOUS',{psp:p},dup?96:92,p,
+        dup?`Duplicate deposit — the payment provider shows ${p._n} deposits of ${money(p)} for ${p.account}${gap} (${p._of} & ${p.id}), but the CRM has ${authTxt}. ${p.id} looks like a repeat submission.`
+           :`Possible double withdrawal — ${p._n} payouts of ${money(p)} for ${p.account}${gap} (${p._of} & ${p.id}), but the CRM authorised ${authTxt==='no matching request'?'none':authTxt}. ${p.id} may have been sent without a request.`,
+        dup?`Do NOT credit the extra deposit. Refund ${p.id} and confirm with the client before the chargeback window.`
+           :`CRITICAL: hold ${p.id}, verify against the CRM withdrawal request, and recall if it was sent in error — money left the business more times than it was authorised.`,
+        dup?'med':'high'));
+      return;
+    }
+    const c=crmByRef[p.ref]; let t=p.ref?ctByRef[p.ref]:null;
+    if(c){
+      p.matched=true; c.matched=true;
+      // join cTrader: by ref, else by composite (account+amount+ccy+same day) — handles blank cTrader comment
+      let joinedBy='ref';
+      if(!t){t=ct.find(x=>!x.matched&&x.account===c.account&&Math.abs(x.amount-c.amount)<0.01&&x.ccy===c.ccy&&x.ts&&c.ts&&Math.abs(x.ts-c.ts)<2*DAYMS);if(t)joinedBy='composite';}
+      if(t)t.matched=true;
+      const sameCcy=p.ccy===c.ccy, dAmt=Math.abs(p.amount-c.amount), pct=dAmt/Math.max(p.amount,c.amount);
+      // amount-mismatch (ref ties but figures disagree beyond fee tolerance, same currency)
+      if(sameCcy&&dAmt>ABS&&pct>PCT){
+        results.push(mk('REVIEW',{psp:p,crm:c,ct:t},70,p,
+          `Reference ${p.ref} matches but amounts differ: PSP ${money(p)} vs CRM ${money(c)} (${(pct*100).toFixed(1)}%). Looks like a manual-entry error${t?` — the trading account was credited ${money(t)}`:''}.`,
+          `Verify the original request. The client may be over/under-credited by ${cur(c.ccy)}${dAmt.toFixed(2)} — recover or top-up.`,'med'));
+        passes.review++; return;
+      }
+      // FX (cross-currency) tolerance
+      if(!sameCcy){
+        const implied=p.amount/c.amount, exp=parseFloat(c.fx)||implied, drift=Math.abs(implied-exp)/exp;
+        const ok=drift<=FXT;
+        results.push(mk('TOLERANCE',{psp:p,crm:c,ct:t},ok?78:60,p,
+          `Cross-currency: ${money(p)} converted to ${money(c)} at ${implied.toFixed(4)} vs booked ${exp.toFixed(4)} (${(drift*100).toFixed(2)}% drift) — ${ok?'within':'OUTSIDE'} the 2% FX tolerance.`,
+          ok?'Reconciled. Post the minor FX difference to the FX-variance account.':'FX drift over tolerance — confirm the conversion rate with treasury.',ok?'low':'med'));
+        passes.tolerance++; return;
+      }
+      // fee tolerance (small amount diff)
+      if(dAmt>0.01&&(dAmt<=ABS||pct<=PCT)){
+        results.push(mk('TOLERANCE',{psp:p,crm:c,ct:t},82,p,
+          `Reference matches; PSP settled ${money(p)} net vs CRM gross ${money(c)} — ${cur(c.ccy)}${dAmt.toFixed(2)} processing fee, within tolerance.`,
+          'Reconciled with fee tolerance. Confirm against the PSP fee schedule.','low'));
+        passes.tolerance++; return;
+      }
+      // timing: PSP+CRM agree, cTrader credit not yet present
+      if(!t){
+        const lag=p.ts&&c.ts?Math.round(Math.abs(c.ts-p.ts)/DAYMS):1;
+        results.push(mk('TOLERANCE',{psp:p,crm:c,ct:null},90,p,
+          `PSP and CRM agree on ${money(p)} but the cTrader credit isn't present yet — settlement lag (T+${lag||1}).`,
+          'In-transit. Re-check next cycle; escalate only if the cTrader credit is still missing after T+2.','low'));
+        passes.tolerance++; return;
+      }
+      // clean match (3-way or composite)
+      const conf=joinedBy==='composite'?92:(t?99:94);
+      results.push(mk('MATCHED',{psp:p,crm:c,ct:t},conf,p,
+        t?`Matched across all three systems on reference ${p.ref}${joinedBy==='composite'?' (cTrader joined by amount + account — its reference field was blank)':''}.`
+         :`Matched PSP ↔ CRM on reference ${p.ref}.`,
+        'No action — reconciled.','none'));
+      joinedBy==='composite'?passes.composite++:passes.exact++;
+    }
+    // else: leave for unmatched pass
+  });
+
+  // Pass C: unmatched residue
+  psp.forEach(p=>{if(p.matched)return;p.matched=true;
+    const cand=nearest(p,crm.filter(x=>!x.matched));
+    results.push(mk('UNMATCHED',{psp:p},100,p,
+      `${money(p)} received by the payment provider for ${p.account}, but there is NO CRM record and NO cTrader credit — the client paid and was not credited.${cand?` Closest CRM candidate: ${cand.client} ${money(cand)} (${Math.round(cand._s*100)}% similar).`:''}`,
+      'Hold pending investigation. Trace the payment, create the CRM deposit, credit the account — before the client complains.','high'));
+    passes.unmatched++;});
+  crm.forEach(c=>{if(c.matched)return;c.matched=true;
+    results.push(mk('UNMATCHED',{crm:c},100,c,
+      `CRM recorded a ${c.dir==='IN'?'deposit':'withdrawal'} of ${money(c)} for ${c.account}, but no payment-provider record exists — the money never actually arrived.`,
+      'Chase the PSP / client. Do not credit until the funds are confirmed received.','med'));
+    passes.unmatched++;});
+  ct.forEach(t=>{if(t.matched)return;t.matched=true;
+    results.push(mk('UNMATCHED',{ct:t},100,t,
+      `The trading account ${t.account} was credited ${money(t)} in cTrader, but there is NO payment and NO CRM record behind it — credited but never paid.`,
+      'CRITICAL: investigate immediately. Funds were added to a trading account with nothing behind them — possible error or fraud.','high'));
+    passes.unmatched++;});
+
+  // (AML / velocity flagging is a separate compliance system, not reconciliation — intentionally not claimed here.)
+  return {results,passes};
+}
+function nearest(p,pool){let best=null,bs=0;pool.forEach(c=>{const s=0.5*Math.max(0,1-Math.abs(p.amount-c.amount)/Math.max(p.amount,1))+0.3*(p.ccy===c.ccy?1:0)+0.2*jw(p.client,c.client);if(s>bs){bs=s;best=c;}});if(best)best._s=bs;return bs>=0.4?best:null;}
+function mk(verdict,legs,confidence,primary,why,action,severity){return{verdict,legs,confidence,primary,why,action,severity,velocity:false};}
+function money(r){return cur(r.ccy)+r.amount.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function cur(c){return({USD:'$',EUR:'€',GBP:'£'})[c]||(c+' ');}
+
+/* ---------- UI ---------- */
+function setFile(src,name,text){
+  let rows;
+  try{ rows=parseCSV(text); }catch(e){ toast('Could not read '+name+' — '+e.message); return; }
+  if(!rows.length){ toast(name+' has a header but no data rows.'); return; }
+  files[src]={name,rows};
+  const uz=$(`.uz[data-src="${src}"]`);uz.classList.add('has');
+  uz.querySelector('.ok').style.display='block';
+  uz.querySelector('.hint').style.display='none';uz.querySelector('.pick').style.display='none';
+  let fn=uz.querySelector('.fname');if(!fn){fn=document.createElement('div');fn.className='fname';uz.appendChild(fn);}
+  fn.textContent=name;
+  let mt=uz.querySelector('.meta');if(!mt){mt=document.createElement('div');mt.className='meta';uz.appendChild(mt);}
+  mt.textContent=rows.length+' rows · '+Object.keys(rows[0]||{}).length+' columns';
+  const all=files.psp&&files.crm&&files.ct;
+  $('#runbtn').disabled=!all; $('#runbtn').classList.toggle('primary',!!all); $('#samplebtn').classList.toggle('primary',!all);
+  $('#resetbtn').style.display='inline-flex';
+  renderMapping();
+}
+function renderMapping(){
+  const order=[['psp','Payment provider'],['crm','CRM / back-office'],['ct','cTrader']];
+  const lbls={ref:'reference',client:'client',account:'account',amount:'amount',ccy:'currency',dir:'direction',date:'date'};
+  let any=false,h='';
+  order.forEach(([src,name])=>{if(!files[src])return;any=true;const cols=Object.keys(files[src].rows[0]||{});const m=MAP[src];
+    h+=`<div class="mapcard"><h4><span class="d"></span>${name}</h4>`+
+      Object.entries(lbls).map(([canon,_])=>{const from=m[canon];if(!from||!cols.includes(from))return'';return `<div class="mrow"><span class="from">${from}</span><span class="to">→ ${canon}</span></div>`;}).join('')+`</div>`;});
+  $('#maps').innerHTML=h;$('#mapping').classList.toggle('on',any);
+}
+function reset(){files.psp=files.crm=files.ct=null;
+  $$('.uz').forEach(uz=>{uz.classList.remove('has');uz.querySelector('.ok').style.display='none';uz.querySelector('.hint').style.display='';uz.querySelector('.pick').style.display='';const fn=uz.querySelector('.fname');if(fn)fn.remove();const mt=uz.querySelector('.meta');if(mt)mt.remove();uz.querySelector('input').value='';});
+  $('#runbtn').disabled=true;$('#runbtn').classList.remove('primary');$('#samplebtn').classList.add('primary');
+  $('#mapping').classList.remove('on');$('#run').classList.remove('on');$('#results').classList.remove('on');$('#resetbtn').style.display='none';
+}
+
+let RESULTS=[],FILTER='all';
+const BUCKETS=[['all','All','grey'],['MATCHED','Matched','green'],['TOLERANCE','Tolerance','amber'],['REVIEW','Needs review','violet'],['DUPLICATE','Duplicate','amber'],['SUSPICIOUS','Suspicious','red'],['UNMATCHED','Unmatched','grey']];
+
+function run(){
+  const psp=normalize(files.psp.rows,'psp'),crm=normalize(files.crm.rows,'crm'),ct=normalize(files.ct.rows,'ct');
+  const {results,passes}=reconcile(psp,crm,ct);
+  RESULTS=results;
+  // cascade reveal
+  $('#run').classList.add('on');$('#results').classList.remove('on');
+  const steps=[
+    ['1','Normalizing formats','3 sources · '+(psp.length+crm.length+ct.length)+' records · normalizing date formats, cTrader cents → units',false],
+    ['2','Exact reference match',passes.exact+' matched on reference',false],
+    ['3','Composite match (amount + account)',passes.composite+' matched where the reference field was blank',false],
+    ['4','Tolerance (fee · FX · settlement lag)',passes.tolerance+' matched within tolerance',false],
+    ['5','Duplicate & suspicious detection',(countV('DUPLICATE')+countV('SUSPICIOUS'))+' flagged',true],
+    ['6','Unmatched residue',countV('UNMATCHED')+' with no counterpart',true],
+  ];
+  $('#passes').innerHTML=steps.map(s=>`<div class="pass ${s[3]?'warn':''}"><div class="pn">${s[0]}</div><div class="pl"><b>${s[1]}</b></div><div class="pc">${s[2]}</div></div>`).join('');
+  const els=$$('#passes .pass');
+  els.forEach((el,i)=>setTimeout(()=>el.classList.add('show'),180*(i+1)));
+  setTimeout(showResults,180*(els.length+1)+350);
+}
+function countV(v){return RESULTS.filter(r=>r.verdict===v).length;}
+function showResults(){
+  const total=files.psp.rows.length;
+  const matched=RESULTS.filter(r=>['MATCHED','TOLERANCE'].includes(r.verdict)).length;
+  const exc=RESULTS.filter(r=>['REVIEW','DUPLICATE','SUSPICIOUS','UNMATCHED'].includes(r.verdict)).length;
+  const rate=Math.round(matched/RESULTS.filter(r=>r.legs.psp).length*100);
+  $('#hRate').textContent=rate+'%';
+  $('#hMatched').textContent=matched+' transactions';
+  $('#hExc').textContent=exc;
+  $('#hSub').textContent=`of ${total} payment-provider records`;
+  // buckets
+  $('#buckets').innerHTML=BUCKETS.map(([v,l,c])=>{const n=v==='all'?RESULTS.length:countV(v);if(v!=='all'&&n===0)return'';
+    const tip=v==='all'?'Every result.':(v==='TOLERANCE'?'Matched within an agreed small difference (fee, FX, or settlement timing) — counts as reconciled.':(TIP[v]||''));
+    return `<div class="bk ${c} ${v===FILTER?'on':''}" data-v="${v}" data-tip="${tip}"><span class="bd"></span><span class="bn">${n}</span><span class="bl">${l}</span></div>`;}).join('');
+  $$('#buckets .bk').forEach(b=>b.onclick=()=>{FILTER=b.dataset.v;renderRows();$$('#buckets .bk').forEach(x=>x.classList.toggle('on',x.dataset.v===FILTER));});
+  renderRows();
+  $('#results').classList.add('on');
+  $('#results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+const PILL={MATCHED:['v-match','Matched'],TOLERANCE:['v-tol','Tolerance'],REVIEW:['v-rev','Needs review'],DUPLICATE:['v-dup','Duplicate'],SUSPICIOUS:['v-susp','Suspicious'],UNMATCHED:['v-un','Unmatched']};
+function renderRows(){
+  const list=RESULTS.filter(r=>FILTER==='all'||r.verdict===FILTER);
+  // order: high severity first, then unmatched/suspicious, then matched
+  const sev={high:0,med:1,low:2,none:3};
+  list.sort((a,b)=>(sev[a.severity]-sev[b.severity])|| a.confidence-b.confidence);
+  $('#rows').innerHTML=list.map((r,i)=>{const [pc,pl]=PILL[r.verdict];const L=r.legs;
+    const ref=(L.psp||L.crm||L.ct).ref||(L.ct?L.ct.id:'—');
+    const cl=(L.psp||L.crm||{}).client||(L.ct?L.ct.account:'');
+    const a=L.psp||L.crm||L.ct;
+    return `<tr class="rrow" tabindex="0" role="button" data-i="${RESULTS.indexOf(r)}">
+      <td class="num">${ref||'—'}</td>
+      <td>${cl||'—'}</td>
+      <td class="amt">${money(a)}</td>
+      <td><span class="legdots" data-tip="Filled = the record is present in that system, hollow = missing. Order: payment provider · CRM · cTrader."><span class="ld ${L.psp?'on':'miss'}"></span><span class="ld ${L.crm?'on':'miss'}"></span><span class="ld ${L.ct?'on':'miss'}"></span></span></td>
+      <td><span class="pill ${pc}" data-tip="${TIP[r.verdict]}">${pl}</span>${r.severity==='high'?'<span class="sevtag" data-tip="High severity — money is at risk and this needs urgent human review.">HIGH</span>':''}</td>
+      <td>${r.verdict==='UNMATCHED'?'<span class="conf" style="color:var(--mut2)" data-tip="No matching record exists, so there is nothing to score — it simply needs investigation.">no match</span>':`<span class="conf"><span class="cbar"><i style="width:${r.confidence}%"></i></span>${r.confidence}%</span>`}</td></tr>`;}).join('');
+  $$('#rows .rrow').forEach(tr=>{const open=()=>openDrill(RESULTS[+tr.dataset.i]);tr.onclick=open;
+    tr.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}};});
+}
+function legHtml(label,r,hlAmount){
+  if(!r)return `<div class="leg miss"><div class="lt"><span class="d"></span>${label}</div><div class="missnote">no record</div></div>`;
+  const rows=[['account',r.account],['reference',r.ref||'(blank)'],['amount',money(r)],['date',r.date],['status',r.status||'—'],['source id',r.id]];
+  return `<div class="leg"><div class="lt"><span class="d"></span>${label}</div>`+
+    rows.map(([k,v])=>`<div class="kv ${hlAmount&&k==='amount'?'hl':''}"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('')+`</div>`;
+}
+function openDrill(r){const L=r.legs;const [pc,pl]=PILL[r.verdict];const danger=r.severity==='high';
+  const ref=(L.psp||L.crm||L.ct).ref||(L.ct?L.ct.id:'');
+  $('#drill').innerHTML=`
+    <div class="dh"><div class="bid">${ref||'—'} · ${r.verdict.toLowerCase()}</div>
+      <h2><span class="pill ${pc}" data-tip="${TIP[r.verdict]}">${pl}</span>${danger?'<span class="sevtag">HIGH SEVERITY</span>':''}</h2>
+      <button class="close" onclick="closeDrill()">×</button></div>
+    <div class="db">
+      ${danger?`<div class="sevbanner high"><span style="color:var(--red);font-weight:800;font-size:15px">!</span> <div><b>High-severity exception.</b> In production this would alert <b>your compliance desk</b> (email / Telegram / webhook). Simulated in the demo.</div></div>`:''}
+      <div class="lbl">The three systems — do they agree?</div>
+      <div class="legs">${legHtml('Payment provider',L.psp,r.verdict==='REVIEW')}${legHtml('CRM',L.crm,r.verdict==='REVIEW')}${legHtml('cTrader',L.ct,r.verdict==='REVIEW')}</div>
+      <div class="aibox ${danger?'danger':''}">
+        <div class="at">◆ Concord · what happened &amp; why</div>
+        <div class="why">${r.why}</div>
+        <div class="act"><div class="al">Suggested next action</div>${r.action}</div>
+        ${r.verdict==='UNMATCHED'?'<div class="conf2" style="color:var(--mut2)">no counterpart to score against — needs investigation</div>':`<div class="conf2">confidence <div class="cb"><i style="width:${r.confidence}%"></i></div> ${r.confidence}%</div>`}
+      </div>
+    </div>`;
+  $('#drill').classList.add('on');$('#scrim').classList.add('on');
+}
+function closeDrill(){$('#drill').classList.remove('on');$('#scrim').classList.remove('on');}
+
+/* export */
+function csvCell(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function exportCSV(){
+  const head=['reference','client','amount','currency','psp','crm','ctrader','verdict','confidence','severity','reason','suggested_action'];
+  const lines=[head.join(',')].concat(RESULTS.map(r=>{const L=r.legs,a=L.psp||L.crm||L.ct;
+    return [ (a.ref||a.id), ((L.psp||L.crm||{}).client||a.account||''), a.amount.toFixed(2), a.ccy,
+      L.psp?'Y':'-',L.crm?'Y':'-',L.ct?'Y':'-', r.verdict, r.verdict==='UNMATCHED'?'n/a':r.confidence+'%', r.severity,
+      r.why, r.action].map(csvCell).join(',');}));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});const u=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=u;a.download='concord-reconciliation-report.csv';a.click();URL.revokeObjectURL(u);
+  toast('Reconciliation report exported (CSV)');
+}
+let tT;function toast(m){const t=$('#toast');t.innerHTML='<b>✓</b> &nbsp;'+m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2600);}
+
+/* wire up */
+$$('.uz input').forEach(inp=>inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>setFile(e.target.dataset.src,f.name,rd.result);rd.readAsText(f);});
+$$('.uz').forEach(uz=>{['dragover','dragenter'].forEach(ev=>uz.addEventListener(ev,e=>{e.preventDefault();uz.classList.add('drag');}));
+  ['dragleave','drop'].forEach(ev=>uz.addEventListener(ev,e=>{e.preventDefault();uz.classList.remove('drag');}));
+  uz.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>setFile(uz.dataset.src,f.name,rd.result);rd.readAsText(f);});});
+$('#samplebtn').onclick=()=>{reset();setFile('psp','psp.csv (TopFX sample)',$('#s-psp').textContent);setFile('crm','crm.csv (TopFX sample)',$('#s-crm').textContent);setFile('ct','ctrader.csv (TopFX sample)',$('#s-ct').textContent);toast('Sample set loaded — hit Run reconciliation');};
+$('#runbtn').onclick=run;$('#resetbtn').onclick=reset;$('#exportbtn').onclick=exportCSV;$('#printbtn').onclick=()=>window.print();
+$('#scrim').onclick=closeDrill;document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrill();});
+$('#topdate').textContent='reconciliation · '+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+</script>
+</body></html>

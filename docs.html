@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Concord — How it works &amp; our approach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090d14;--bg2:#0c121c;--surface:#111a26;--surface2:#16212f;--line:#1d2a3a;--line2:#28384c;--ink:#e8eff8;--mut:#8a99ad;--mut2:#5e6e83;--green:#2fd07e;--amber:#f5b14c;--blue:#56a8ff;--mono:'JetBrains Mono',ui-monospace,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,'Segoe UI',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+/* top nav */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(9,13,20,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .in{max-width:840px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,var(--green),#1d8f57);flex:0 0 auto}
+.mark{font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.13em}.mark b{color:var(--green)}
+.xnav{display:flex;gap:3px;margin-left:auto;flex-wrap:wrap}
+.xnav a{font-size:12.5px;color:var(--mut);padding:5px 11px;border-radius:6px;text-decoration:none;white-space:nowrap}
+.xnav a:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.xnav a.cur{color:var(--green);background:#14241b}
+.wrap{max-width:840px;margin:0 auto;padding:32px 20px 80px}
+h1{font-size:29px;margin:8px 0 8px;letter-spacing:-.02em;font-weight:700}
+.lede{color:var(--mut);font-size:15.5px;margin:0 0 8px;max-width:660px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:26px 0 8px}
+.card{background:var(--surface);border:1px solid var(--line2);border-radius:13px;padding:18px;text-decoration:none;color:inherit;display:block;transition:.15s}
+.card:hover{border-color:var(--green);background:var(--surface2)}
+.card .k{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--green);font-weight:700}
+.card h3{margin:8px 0 4px;font-size:17px}.card p{margin:0;font-size:13px;color:var(--mut)}
+.card .go{margin-top:10px;font-size:13px;color:var(--green);font-weight:600}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin:40px 0 4px;font-weight:700}
+h2 .n{font-family:var(--mono);color:var(--mut2);margin-right:8px}
+.sec{font-size:15px;color:#d2dbe7}.sec p{margin:10px 0}.sec b{color:var(--ink)}
+.big-quote{font-family:var(--mono);font-size:15px;color:var(--ink);background:var(--surface);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0}
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--mut);margin:14px 0}
+.flow span{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:6px 11px;color:var(--ink)}
+.flow i{color:var(--green);font-style:normal}
+.callout{background:linear-gradient(180deg,#10241a,#0e1c15);border:1px solid #1d4a31;border-radius:13px;padding:18px 20px;margin:18px 0}
+.callout .t{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--green);font-weight:700;margin-bottom:8px}
+.callout p{margin:8px 0;font-size:15px;color:#e3eef0}.callout b{color:#fff}
+.schema{background:var(--surface);border:1px solid var(--line);border-radius:11px;overflow:hidden;margin:12px 0}
+.schema .sh{padding:9px 14px;border-bottom:1px solid var(--line);font-weight:600;font-size:13px;display:flex;align-items:center;gap:8px}
+.schema .sh .d{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.schema code{display:block;padding:11px 14px;font-family:var(--mono);font-size:11.5px;color:#9fb3c8;line-height:1.7;overflow-x:auto;white-space:nowrap}
+.schema code b{color:var(--amber);font-weight:500}
+.note{font-size:13px;color:var(--mut)}
+ul.q{margin:10px 0;padding-left:20px;font-size:14px;color:#cfd9e6}ul.q li{margin:5px 0}
+.foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut2);font-size:13px}
+.foot a{color:var(--blue);text-decoration:none}.foot a:hover{text-decoration:underline}
+@media(max-width:620px){.cards{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="topbar"><div class="in">
+  <div class="logo"></div><div class="mark">CON<b>CORD</b></div>
+  <nav class="xnav"><a href="index.html">▶ Live demo</a><a href="modules.html">▣ Dashboard</a><a href="docs.html" class="cur">How it works</a><a href="glossary.html">Glossary</a></nav>
+</div></div>
+
+<div class="wrap">
+<h1>How it works — and how we'd build it for you</h1>
+<p class="lede">A two-minute read: what you're looking at, what reconciliation actually is, how the demo reads data — and how the real system gets built around <b>your</b> systems and <b>your</b> process, not ours.</p>
+
+<div class="cards">
+  <a class="card" href="index.html"><div class="k">▶ Try it</div><h3>Run the live demo</h3><p>Load the sample set (or drop in three CSVs) and watch it actually match the records and flag the mismatches — live, in your browser.</p><div class="go">Open the live demo →</div></a>
+  <a class="card" href="modules.html"><div class="k">▣ Explore</div><h3>Browse the dashboard</h3><p>The wider system as a concept map — the morning reconciliation view, breaks queue, reports, and the optional modules.</p><div class="go">Open the dashboard →</div></a>
+</div>
+
+<h2><span class="n">01</span> What reconciliation actually is</h2>
+<div class="sec">
+<p>One real money event shows up in several systems — and they don't always agree by themselves. A €1,000 client deposit appears at the <b>payment provider</b> ("we received €1,000"), in the <b>CRM</b> ("deposit approved"), and in <b>cTrader</b> ("balance credited"). Reconciliation is simply checking that they agree — and surfacing every case where they don't.</p>
+<div class="big-quote">Same event. Different systems. Same truth.</div>
+<p>When they disagree, that's a <b>break</b> (an exception). The dangerous ones are obvious once you see them: <b>client paid but never credited</b> (an angry client, money in limbo) or <b>credited but never paid</b> (the company just gave money away). The whole machine is five steps:</p>
+<div class="flow"><span>sources</span><i>→</i><span>match</span><i>→</i><span>breaks</span><i>→</i><span>review</span><i>→</i><span>report &amp; audit</span></div>
+<p>The forex vocabulary is just the skin. Underneath, it's a <b>systems problem</b>: pull data from multiple sources, normalize it, match it, detect the exceptions, and give finance a clean trail to resolve and audit.</p>
+</div>
+
+<h2><span class="n">02</span> What the demo does</h2>
+<div class="sec">
+<p>It takes three exports — payment provider, CRM, cTrader — and runs a real matching cascade: exact reference, then a tolerant match (small fee / FX / settlement-timing differences), then a fuzzy match, and whatever's left becomes a typed exception. You get a one-screen summary, a filterable list, and a click-in view that shows all three systems side by side with the reason and a suggested next action. Nothing is uploaded anywhere — it all runs in the browser.</p>
+</div>
+
+<h2><span class="n">03</span> The data the demo expects</h2>
+<div class="sec">
+<p>So you can see exactly what's going in, the demo reads three CSV exports with these shapes (the sample set follows them). It's already tolerant of real-world mess — <b>comma or semicolon files, European or US number formats</b> (<span class="note">1.234,56 or 1,234.56</span>)<b>, different date formats, and differently-named columns</b> all mapped to one common model:</p>
+<div class="schema"><div class="sh"><span class="d"></span>Payment provider</div><code>psp_txn_id, <b>payment_ref</b>, sender_name, account, value, ccy, type, processed_at, state</code></div>
+<div class="schema"><div class="sh"><span class="d"></span>CRM / back-office</div><code>crm_ref, client_name, login, txn_type, amount, currency, value_date, fx_rate, status</code></div>
+<div class="schema"><div class="sh"><span class="d"></span>cTrader balance operations</div><code>balance_id, ctid_account, operation, delta_cents, currency, server_time, comment</code></div>
+<p class="note">The match keys are the shared payment reference, then amount + account + currency + value-date when no single reference exists.</p>
+</div>
+
+<div class="callout">
+<div class="t">04 · The real build works the other way around</div>
+<p><b>You don't adapt to the demo — the system adapts to you.</b> In production you give us your <b>actual</b> exports, in whatever format your systems already produce. We map <b>your</b> real data, define the matching rules that fit how <b>you</b> reconcile today, and then optimize that process inside the system.</p>
+<p>We don't make you change how you work. We encode how you work — and make it faster, safer, and continuous: <b>"show us your systems, your exports, and what you check by hand today. We map the flow, define the matching rules, and build the tool that finds the mismatches."</b></p>
+<p style="margin-bottom:0">The path is deliberately de-risked: <b>discovery</b> (map your real flow) → <b>MVP on your worst stream</b>, proving value on your own data → <b>expand</b> the other streams → <b>optimize</b> (the system keeps learning your patterns, so the breaks queue shrinks over time).</p>
+</div>
+
+<h2><span class="n">05</span> Core now, optional later — confirmed with you</h2>
+<div class="sec">
+<p>What you see running is the <b style="color:var(--green)">core</b>: sources → match → breaks → review → report → audit. Everything beyond it — exposure / risk reconciliation, client-money segregation reporting, IB &amp; partner commissions, bundled audit packs — is a <b style="color:var(--amber)">possible module</b>, marked clearly as <i>to be confirmed against your workflow</i>. We'd rather map your real process than show you numbers we invented. See the <a href="modules.html" style="color:var(--blue)">dashboard</a> for the full map, and the <a href="glossary.html" style="color:var(--blue)">glossary</a> for every term in plain English.</p>
+</div>
+
+<h2><span class="n">06</span> What we'd need from you to scope it</h2>
+<div class="sec">
+<ul class="q">
+<li>Platform — cTrader confirmed? Open API / a read-only DB replica?</li>
+<li>Funding rails — which PSPs / banks / crypto for deposits &amp; withdrawals?</li>
+<li>Bank statements — format (MT940 / camt.053 / CSV) and how they're delivered?</li>
+<li>CRM + accounting / GL — which systems, and read access to each?</li>
+<li>Today — what do you reconcile now, and how? Which streams are worst?</li>
+<li>The trigger — a loss, a near-miss, an audit, a failed close, or scaling?</li>
+<li>Scale — funding transactions &amp; trading accounts per day, number of currencies?</li>
+<li>Delivery — cloud or on-prem / private? Who operates it (finance / back-office / risk)?</li>
+</ul>
+<p class="note">With those answered and a couple of sample exports, we define the exact MVP scope, the timeline, and a precise quote.</p>
+</div>
+
+<div class="foot">
+<b style="color:var(--ink)">Concord</b> · a reconciliation system by Marios Mintzis Solutions Tech &nbsp;·&nbsp;
+<a href="index.html">▶ live demo</a> &nbsp;·&nbsp; <a href="modules.html">dashboard</a> &nbsp;·&nbsp; <a href="glossary.html">glossary</a><br><br>
+This is a working concept on sample data — built to show the direction and open the conversation, not to be the finished system.
+</div>
+</div></body></html>

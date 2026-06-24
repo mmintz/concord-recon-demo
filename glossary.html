@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Concord — Glossary · every term in plain English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090d14;--bg2:#0c121c;--surface:#111a26;--line:#1d2a3a;--line2:#28384c;--ink:#e8eff8;--mut:#8a99ad;--mut2:#5e6e83;--green:#2fd07e;--amber:#f5b14c;--blue:#56a8ff;--mono:'JetBrains Mono',ui-monospace,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,'Segoe UI',sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding:34px 20px 80px}
+.bar{display:flex;align-items:center;gap:11px;margin-bottom:8px;flex-wrap:wrap;row-gap:8px}
+.logo{width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,var(--green),#1d8f57)}
+.mark{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.13em}.mark b{color:var(--green)}
+.xnav{display:flex;gap:3px;flex-wrap:wrap;margin-left:auto}
+.xnav a{font-size:12.5px;color:var(--mut);padding:5px 11px;border-radius:6px;text-decoration:none;white-space:nowrap}
+.xnav a:hover{color:var(--ink);background:rgba(255,255,255,.05)}.xnav a.cur{color:var(--green);background:#14241b}
+h1{font-size:27px;margin:14px 0 6px;letter-spacing:-.01em}
+.lede{color:var(--mut);font-size:15px;margin:0 0 4px;max-width:640px}
+.rule{font-size:13px;color:var(--mut2);border-left:2px solid var(--green);padding:8px 0 8px 13px;margin:18px 0 6px;max-width:640px}
+.rule b{color:var(--ink)}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:.1em;margin:34px 0 4px;display:flex;align-items:center;gap:10px}
+h2 .tag{font-family:var(--mono);font-size:11px;font-weight:700;border-radius:5px;padding:2px 9px;letter-spacing:.02em}
+.tag.core{background:#10271a;color:var(--green);border:1px solid #1d3a28}
+.tag.adv{background:#241c0d;color:var(--amber);border:1px solid #4a3a1c}
+h2 .sub{font-family:Inter;text-transform:none;letter-spacing:0;font-size:12.5px;color:var(--mut2);font-weight:400}
+.term{padding:14px 0;border-bottom:1px solid #14202e;display:grid;grid-template-columns:200px 1fr;gap:18px}
+.term:last-child{border:0}
+.term .t{font-weight:600;font-size:14.5px}
+.term .t .alt{display:block;font-family:var(--mono);font-size:11.5px;color:var(--mut2);font-weight:400;margin-top:3px}
+.term .d{font-size:13.5px;color:#c3cedd}.term .d b{color:var(--ink)}
+.term .say{display:block;margin-top:7px;font-size:12.5px;color:var(--mut);font-style:italic}
+.term .say::before{content:"On screen: ";font-style:normal;color:var(--mut2);font-weight:600}
+.note{font-size:12px;color:var(--mut2);margin-top:6px}
+.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut2);font-size:12.5px}
+.foot a{color:var(--blue);text-decoration:none}.foot a:hover{text-decoration:underline}
+@media(max-width:640px){.term{grid-template-columns:1fr;gap:5px}}
+</style></head>
+<body><div class="wrap">
+<div class="bar"><div class="logo"></div><div class="mark">CON<b>CORD</b></div>
+<nav class="xnav"><a href="index.html">▶ Live demo</a><a href="modules.html">▣ Dashboard</a><a href="docs.html">How it works</a><a href="glossary.html" class="cur">Glossary</a></nav></div>
+<h1>Glossary — every term, in plain English</h1>
+<p class="lede">A reconciliation system uses a lot of finance vocabulary. Here is every word that appears in the demo,
+explained simply — so the meeting is a conversation, not a vocabulary test.</p>
+<div class="rule"><b>The honest split.</b> <b style="color:var(--green)">Core</b> = the reconciliation machine, shown
+working live. <b style="color:var(--amber)">Advanced</b> = possible modules — real, but to be confirmed against your
+actual workflow before we build them. We'd rather map your real process than show numbers we invented.</div>
+
+<h2><span class="tag core">CORE</span> <span class="sub">the honest machine — shown working live</span></h2>
+
+<div class="term"><div class="t">Reconciliation</div><div class="d">Proving that two independent records of the same money agree. That's the whole product.<span class="say">Proving the same payment agrees across your systems.</span></div></div>
+<div class="term"><div class="t">Source</div><div class="d">One system that recorded the money. The demo uses three: the payment provider, the CRM, and cTrader.<span class="say">One system that recorded the money.</span></div></div>
+<div class="term"><div class="t">PSP / Payment provider</div><div class="d">The rail client money arrives and leaves on — cards, e-wallets (Skrill, Neteller), bank transfers.<span class="say">Payment service provider — the rail money flows in and out on.</span></div></div>
+<div class="term"><div class="t">CRM / back-office</div><div class="d">The broker's system of record for clients: deposit requests, withdrawal requests, onboarding, statuses.<span class="say">Your back-office record of every client deposit and withdrawal.</span></div></div>
+<div class="term"><div class="t">cTrader</div><div class="d">The trading platform TopFX runs (by Spotware) — where client balances are credited and debited. (cTrader's equivalent of MT4/MT5.)<span class="say">The trading platform — where client balances are credited.</span></div></div>
+<div class="term"><div class="t">Source pair</div><div class="d">Two systems being compared against each other — e.g. payment provider ↔ cTrader, or CRM ↔ bank.<span class="say">The two systems being compared.</span></div></div>
+<div class="term"><div class="t">Match / Matched</div><div class="d">The same transaction was found in every source and the figures agree. Safe — no action.<span class="say">Found in every system and the figures agree.</span></div></div>
+<div class="term"><div class="t">Break <span class="alt">a.k.a. Exception</span></div><div class="d">A mismatch between records that a human must explain. <b>"Break" and "exception" mean the same thing</b> — both are standard; the demo uses "exception."<span class="say">A mismatch the system caught and sent to a human.</span></div></div>
+<div class="term"><div class="t">Unmatched</div><div class="d">A record that exists in one system with no matching record in the others. The most important class — it's where "paid but not credited" and "credited but never paid" live.<span class="say">Exists in one system, missing in the others.</span></div></div>
+<div class="term"><div class="t">Duplicate</div><div class="d">The same payment recorded or processed more than once (often a double-click or a webhook retry).<span class="say">The same payment processed twice.</span></div></div>
+<div class="term"><div class="t">Tolerance</div><div class="d">A match where the amounts differ by a tiny, expected amount — a processing fee or FX rounding — close enough to count as agreed. <b>The exact thresholds are set with you</b>, not assumed.<span class="say">A small allowed difference so a fee or 1-cent gap isn't flagged.</span></div></div>
+<div class="term"><div class="t">Needs review</div><div class="d">The reference ties the records together but the amounts disagree by more than a fee — a person should check it.<span class="say">Reference matches but amounts don't — needs a human.</span></div></div>
+<div class="term"><div class="t">Suspicious (possible loss)</div><div class="d">A pattern that may be a real loss or error — for example a payout sent twice against one authorised request.<span class="say">A pattern that may be a real loss — flagged for urgent review.</span></div></div>
+<div class="term"><div class="t">Reference / exact match</div><div class="d">The shared ID both systems carry for the same payment — the primary key used to tie records together.<span class="say">The shared ID used to tie two records together.</span></div></div>
+<div class="term"><div class="t">Composite match</div><div class="d">When there's no single shared reference, matching on a combination of fields instead — account + amount + date. The demo does this for real when a cTrader reference field is blank.<span class="say">Matching on several fields at once when there's no common reference.</span></div></div>
+<div class="term"><div class="t">Confidence</div><div class="d">How sure the system is about a result, 0–100%. A guide for the reviewer — the model's certainty, not a guarantee.<span class="say">The model's certainty — not a guarantee.</span></div></div>
+<div class="term"><div class="t">Normalize <span class="alt">canonical model</span></div><div class="d">Convert each system's different format into one common shape so they can be compared. Each export names things differently; we read them all into one model.<span class="say">We read three different file formats into one common shape.</span></div></div>
+<div class="term"><div class="t">Value date</div><div class="d">The date the money is actually effective for the account — which can differ from when the row was entered. Explains a lot of timing gaps.<span class="say">The date the money is effective — explains timing gaps.</span></div></div>
+<div class="term"><div class="t">Settlement lag <span class="alt">T+1 / T+2</span></div><div class="d">The money settles one or two business days after the request — a normal delay, not a loss. <span class="note">(Not shown as a label in the current demo — included so you can explain a "timing" match.)</span><span class="say">Settles one or two business days later — a normal delay.</span></div></div>
+<div class="term"><div class="t">Age · Owner · Status</div><div class="d">For each break: how long it's been open (age), who's resolving it (owner), and where it stands (open / investigating / escalated / resolved). <span class="note">(Part of the full breaks-queue workflow — the module map — not the live matching demo.)</span><span class="say">How old the mismatch is, who owns it, and its state.</span></div></div>
+<div class="term"><div class="t">Escalated</div><div class="d">A mismatch serious enough that a senior person or operator must review it now. <span class="note">(A status in the full system / module map.)</span><span class="say">Bumped up — needs higher-priority human review.</span></div></div>
+<div class="term"><div class="t">Hold pending investigation</div><div class="d">Money we can't yet match is parked and traced before any action — not lost, just held until explained. (The formal term is a "suspense" account.)<span class="say">Held until we trace it — not lost, just parked.</span></div></div>
+<div class="term"><div class="t">Audit log / resolution note</div><div class="d">A timestamped record of every match, break, and who-resolved-what-and-why — the trail an auditor asks for. <span class="note">(In the full system / module map.)</span><span class="say">Who did what, when, and why — the auditor's trail.</span></div></div>
+
+<h2><span class="tag adv">ADVANCED</span> <span class="sub">possible modules — real, but to be confirmed against your workflow</span></h2>
+
+<div class="term"><div class="t">Exposure / unhedged</div><div class="d">The broker's <b>net</b> open market risk — the B-book position that isn't covered by an A-book hedge. This is risk/dealing-desk work, not back-office reconciliation — a separate module, only if you want it.<span class="say">The broker's own net market risk — a separate risk module.</span></div></div>
+<div class="term"><div class="t">A-book / B-book</div><div class="d">Whether the broker passes a client's trade out to the market (A-book) or takes the other side itself and holds the risk (B-book).<span class="say">Pass the trade to the market, or hold the risk yourself.</span></div></div>
+<div class="term"><div class="t">LP (liquidity provider)</div><div class="d">Where A-book trades are hedged — the broker's counterparty in the market.<span class="say">Where hedged trades go — the broker's counterparty.</span></div></div>
+<div class="term"><div class="t">FIX / drop-copy</div><div class="d">FIX is a standard real-time trading feed; a drop-copy is a read-only copy of every fill. A genuine production upgrade later — not wired up in the demo.<span class="say">A live trade feed — a real upgrade later, not connected yet.</span></div></div>
+<div class="term"><div class="t">Client-money segregation</div><div class="d">Keeping client funds in a separate bank account from the firm's own money — a CySEC licence rule, reconciled daily. A high-value module, but built to <b>your exact regulatory template</b>, never assumed.<span class="say">Daily proof client money is kept separate — built to your template.</span></div></div>
+<div class="term"><div class="t">IB / rebate</div><div class="d">An Introducing Broker (affiliate) paid a volume-based commission. Reconciling what's owed vs what was actually paid — depends on your commission model.<span class="say">Making sure partner commissions paid match what was earned.</span></div></div>
+<div class="term"><div class="t">Swap / rollover</div><div class="d">Overnight interest charged on positions held past end of day. Must match what was actually charged on the platform.<span class="say">Overnight interest — must match what was charged.</span></div></div>
+<div class="term"><div class="t">Nostro <span class="alt">MT940 / camt.053</span></div><div class="d">Your own bank account (one per currency); MT940 (legacy) and camt.053 (modern) are the two bank-statement file formats we'd read.<span class="say">Your bank account and its statement formats — we read both.</span></div></div>
+<div class="term"><div class="t">Audit pack</div><div class="d">A one-click bundled export of a period's reconciliations, breaks and sign-offs for an auditor. A deliverable we'd build, not an industry standard.<span class="say">One-click bundle of everything an auditor would ask for.</span></div></div>
+<div class="term"><div class="t">Maker-checker / four-eyes</div><div class="d">One person acts, a different person approves — mandatory on any change that moves money, so no single person controls it.<span class="say">One person acts, a second approves — no single point of control.</span></div></div>
+<div class="term"><div class="t">AML velocity</div><div class="d">An anti-money-laundering signal: an unusual burst of payments on one account in a short window. This is a <b>separate compliance system</b> from reconciliation — a possible add-on, not part of the core.<span class="say">An unusual burst of payments on one account — a separate AML module.</span></div></div>
+
+<div class="foot">
+<b style="color:var(--ink)">Concord</b> · Marios Mintzis Solutions Tech &nbsp;·&nbsp;
+<a href="index.html">← back to the live demo</a> &nbsp;·&nbsp; <a href="modules.html">module map</a><br><br>
+If a term ever feels like it's pretending to know your business, that's the cue to ask rather than assert. The goal is
+to align this to how TopFX actually works.
+</div>
+</div></body></html>

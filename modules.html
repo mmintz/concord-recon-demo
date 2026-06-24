@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Concord — Reconciliation · TopFX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#090d14; --bg2:#0c121c; --surface:#111a26; --surface2:#16212f; --raise:#1a2636;
+  --line:#1d2a3a; --line2:#28384c;
+  --ink:#e8eff8; --mut:#8a99ad; --mut2:#5e6e83;
+  --green:#2fd07e; --green2:#1f9c5c; --amber:#f5b14c; --red:#f6685e; --blue:#56a8ff; --violet:#9b8cff;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,'Segoe UI',sans-serif;
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+button{font-family:inherit}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#1f2c3d;border-radius:6px;border:2px solid var(--bg)}
+
+/* shell */
+.app{display:grid;grid-template-columns:230px 1fr;grid-template-rows:56px 1fr;height:100vh;
+  grid-template-areas:"brand top" "nav main"}
+.brand{grid-area:brand;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);background:var(--bg2)}
+.logo{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--green),#1d8f57);position:relative;flex:0 0 auto;box-shadow:0 0 0 1px #2fd07e33,0 4px 12px #2fd07e22}
+.logo::after{content:"";position:absolute;inset:6px;border:2px solid #08120c;border-radius:2px;border-right-color:transparent;border-bottom-color:transparent}
+.wordmark{font-family:var(--mono);font-weight:700;font-size:16px;letter-spacing:.14em}
+.wordmark b{color:var(--green)}
+.topbar{grid-area:top;display:flex;align-items:center;gap:16px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--bg2)}
+.crumb{font-size:13px;color:var(--mut)}.crumb b{color:var(--ink);font-weight:600}
+.demo-chip{font-size:11px;color:var(--amber);border:1px solid #5a4423;background:#2a1f0f;border-radius:5px;padding:3px 8px;font-weight:600;letter-spacing:.02em}
+.spacer{margin-left:auto}
+.sync{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mut);font-family:var(--mono)}
+.xnav{display:flex;gap:3px;flex-wrap:wrap}
+.xnav a{font-size:12.5px;color:var(--mut);padding:5px 10px;border-radius:6px;text-decoration:none;white-space:nowrap}
+.xnav a:hover{color:var(--ink);background:rgba(255,255,255,.05)}.xnav a.cur{color:var(--green);background:#14241b}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px #2fd07e22}
+.dot.live{animation:pulse 2.4s infinite}@keyframes pulse{0%,100%{box-shadow:0 0 0 2px #2fd07e22}50%{box-shadow:0 0 0 5px #2fd07e10}}
+.user{display:flex;align-items:center;gap:9px;padding-left:16px;border-left:1px solid var(--line)}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3a4d6b,#243348);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#cdd9e8}
+.user .meta{font-size:12px;line-height:1.25}.user .meta b{display:block;font-weight:600}.user .meta span{color:var(--mut2)}
+
+/* nav */
+.nav{grid-area:nav;border-right:1px solid var(--line);background:var(--bg2);padding:14px 12px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+.nav .sect{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut2);margin:14px 10px 6px;font-weight:600}
+.nav a{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:8px;color:var(--mut);cursor:pointer;font-weight:500;font-size:13.5px;border:1px solid transparent}
+.nav a:hover{background:var(--surface);color:var(--ink)}
+.nav a.on{background:#14241b;color:var(--green);border-color:#1d3a28}
+.nav a .ico{width:17px;height:17px;flex:0 0 auto;opacity:.85}
+.nav a .ct{margin-left:auto;font-family:var(--mono);font-size:11px;background:#2a1410;color:var(--red);border-radius:20px;padding:1px 7px;font-weight:600}
+.nav a.on .ct{background:#3a1714}
+.nav-foot{margin-top:auto;font-size:11px;color:var(--mut2);padding:10px;border-top:1px solid var(--line);line-height:1.5}
+
+/* main */
+.main{grid-area:main;overflow-y:auto;padding:22px 26px 60px;position:relative}
+.screen{display:none}.screen.on{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.h{display:flex;align-items:flex-end;gap:14px;margin:0 0 18px}
+.h h1{font-size:21px;margin:0;font-weight:650;letter-spacing:-.01em}
+.h .sub{color:var(--mut);font-size:13px;margin-bottom:2px}
+.h .right{margin-left:auto;display:flex;gap:8px}
+.btn{border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 13px;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{border-color:#36506e;background:var(--surface2)}
+.btn.green{background:#14301f;border-color:#1e5236;color:var(--green)}.btn.green:hover{background:#163a25}
+
+/* kpi row */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 16px;position:relative;overflow:hidden}
+.kpi .lab{font-size:11.5px;color:var(--mut);letter-spacing:.02em;text-transform:uppercase;font-weight:600}
+.kpi .val{font-family:var(--mono);font-size:26px;font-weight:700;margin-top:9px;letter-spacing:-.01em}
+.kpi .delta{font-size:12px;margin-top:5px;color:var(--mut);font-family:var(--mono)}
+.kpi.good .val{color:var(--green)}.kpi.warn .val{color:var(--amber)}.kpi.bad .val{color:var(--red)}
+.kpi .spark{position:absolute;right:14px;top:14px;opacity:.5}
+.up{color:var(--green)}.down{color:var(--red)}
+
+.grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.card .ch{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.card .ch h3{margin:0;font-size:14px;font-weight:600}.card .ch .tag{font-size:11px;color:var(--mut);font-family:var(--mono)}
+.card .cb{padding:6px 16px 14px}
+
+/* health rows */
+.hrow{display:grid;grid-template-columns:1.4fr 1fr auto;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid #14202e}
+.hrow:last-child{border-bottom:0}
+.hrow .pair{font-weight:600;font-size:13.5px}.hrow .pair span{display:block;font-size:11.5px;color:var(--mut2);font-weight:400;margin-top:2px}
+.bar{height:7px;border-radius:4px;background:#16222f;overflow:hidden;margin-top:7px}
+.bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green2),var(--green))}
+.pct{font-family:var(--mono);font-size:12.5px;color:var(--mut)}
+.hbreak{text-align:right;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.hbreak b{display:block;font-size:14px}
+.sev{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-family:var(--mono)}
+.s-dot{width:8px;height:8px;border-radius:50%}.s-green{background:var(--green)}.s-amber{background:var(--amber)}.s-red{background:var(--red)}
+
+/* alerts feed */
+.feed{display:flex;flex-direction:column}
+.alert{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid #14202e}
+.alert:last-child{border:0}
+.alert .ai{width:30px;height:30px;border-radius:8px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:14px}
+.ai-red{background:#2a1410;color:var(--red)}.ai-amber{background:#2a1f0d;color:var(--amber)}.ai-green{background:#10271a;color:var(--green)}.ai-blue{background:#0f2236;color:var(--blue)}
+.alert .at{font-size:13px}.alert .at b{font-weight:600}
+.alert .ts{font-size:11px;color:var(--mut2);font-family:var(--mono);margin-top:2px}
+
+/* segregation card */
+.seg{display:flex;align-items:center;gap:14px;padding:14px 16px}
+.seg .ring{width:54px;height:54px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;
+  background:conic-gradient(var(--green) 0 100%,#16222f 0);color:var(--green);font-family:var(--mono)}
+.seg .ring i{width:42px;height:42px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center}
+.seg .st b{font-size:14px}.seg .st span{font-size:12px;color:var(--mut)}
+
+/* tables */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut2);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:1}
+.tbl td{padding:11px 12px;border-bottom:1px solid #14202e}
+.tbl tr.brk{cursor:pointer}.tbl tr.brk:hover td{background:#13202d}
+.tbl .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.amt{font-family:var(--mono);font-weight:600;text-align:right}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border-radius:20px;padding:3px 9px;white-space:nowrap}
+.p-time{background:#0f2236;color:var(--blue)}.p-fx{background:#1f1a33;color:var(--violet)}.p-fee{background:#16222f;color:var(--mut)}
+.p-miss{background:#2a1f0d;color:var(--amber)}.p-dup{background:#2a1410;color:var(--red)}.p-fraud{background:#2a1410;color:var(--red)}
+.st-pill{font-size:11px;font-weight:600;border-radius:5px;padding:3px 8px}
+.st-open{background:#2a1f0d;color:var(--amber)}.st-inv{background:#0f2236;color:var(--blue)}.st-esc{background:#2a1410;color:var(--red)}.st-res{background:#10271a;color:var(--green)}
+.age{font-family:var(--mono);font-size:12px}.age.old{color:var(--amber)}.age.crit{color:var(--red)}
+.who{display:inline-flex;align-items:center;gap:7px}.who .av{width:22px;height:22px;border-radius:50%;background:#243348;font-size:10px;display:flex;align-items:center;justify-content:center;color:#bcc9d9;font-weight:600}
+
+/* filters */
+.filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.fchip{font-size:12.5px;color:var(--mut);background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:6px 11px;cursor:pointer}
+.fchip.on{color:var(--green);border-color:#1e5236;background:#14241b}
+.fchip:hover{color:var(--ink)}
+
+/* drilldown */
+.scrim{position:fixed;inset:0;background:#04070bcc;backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.25s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drill{position:fixed;top:0;right:0;width:min(620px,94vw);height:100vh;background:var(--bg2);border-left:1px solid var(--line2);
+  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:41;overflow-y:auto;box-shadow:-20px 0 60px #0009}
+.drill.on{transform:none}
+.dh{position:sticky;top:0;background:var(--bg2);border-bottom:1px solid var(--line);padding:16px 20px;z-index:2}
+.dh .row1{display:flex;align-items:center;gap:12px}
+.dh .bid{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.dh h2{font-size:18px;margin:6px 0 0;font-weight:650}
+.dh .close{margin-left:auto;width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--surface);color:var(--mut);font-size:17px;cursor:pointer}
+.dh .close:hover{color:var(--ink)}
+.db{padding:18px 20px 40px}
+.match2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
+.rec{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px 14px}
+.rec.miss{border-style:dashed;border-color:#5a4423;background:#1a1305}
+.rec .src{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut2);font-weight:600;margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.rec .src .d{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:12.5px;border-bottom:1px solid #131f2c}
+.kv:last-child{border:0}.kv .k{color:var(--mut)}.kv .v{font-family:var(--mono);text-align:right}
+.kv.diff .v{color:var(--amber)}.kv.diff{background:#1c150622;margin:0 -6px;padding:5px 6px;border-radius:5px}
+.missrow{text-align:center;color:var(--amber);font-size:13px;padding:24px 0;font-weight:500}
+.aibox{background:linear-gradient(180deg,#101c2e,#0e1826);border:1px solid #1f3550;border-radius:12px;padding:15px 16px;margin:14px 0}
+.aibox .at{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--blue);font-weight:600;letter-spacing:.03em;text-transform:uppercase;margin-bottom:10px}
+.aibox .verdict{font-size:14px;line-height:1.55}.aibox .verdict b{color:var(--ink)}
+.aibox .conf{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:var(--mut);font-family:var(--mono)}
+.conf .cbar{flex:1;height:6px;background:#16222f;border-radius:4px;overflow:hidden}.conf .cbar i{display:block;height:100%;background:linear-gradient(90deg,#2f7fd0,#56a8ff)}
+.aibox.danger{background:linear-gradient(180deg,#251015,#1a0c10);border-color:#5a2420}.aibox.danger .at{color:var(--red)}
+.aibox.danger .conf .cbar i{background:linear-gradient(90deg,#b23f3a,#f6685e)}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut2);font-weight:600;margin:18px 0 9px}
+.hist{font-size:12.5px;color:var(--mut)}.hist .hi{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #131f2c}.hist .hi span{font-family:var(--mono)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px}
+.act{border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:9px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.act:hover{background:var(--surface2)}
+.act.match{border-color:#1e5236;color:var(--green);background:#13261b}.act.match:hover{background:#163020}
+.act.esc{border-color:#5a2420;color:var(--red);background:#1f1011}.act.esc:hover{background:#2a1517}
+.four{font-size:11.5px;color:var(--mut2);text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px}
+
+/* exposure bars */
+.exprow{display:grid;grid-template-columns:80px 1fr 120px;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid #14202e}
+.exprow:last-child{border:0}
+.sym{font-family:var(--mono);font-weight:700;font-size:14px}
+.expbar{position:relative;height:30px;background:#101a26;border-radius:6px;display:flex;align-items:center}
+.expbar .mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#2a3a4f}
+.expbar i{position:absolute;height:18px;border-radius:4px;top:6px}
+.expbar i.net{background:#34507a55;border:1px solid #3f5f8f}
+.expbar i.gap{background:var(--amber)}.expbar i.gap.ok{background:var(--green2)}.expbar i.gap.crit{background:var(--red)}
+.expval{text-align:right;font-family:var(--mono);font-size:13px}.expval b{display:block}
+
+/* reports grid */
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.rcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer}
+.rcard:hover{border-color:#36506e}
+.rcard .ri{width:36px;height:36px;border-radius:9px;background:#13202d;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:12px}
+.rcard h4{margin:0 0 5px;font-size:14px}.rcard p{margin:0;font-size:12.5px;color:var(--mut);line-height:1.5}
+.rcard .rf{margin-top:12px;font-size:12px;color:var(--green);font-weight:600;display:flex;align-items:center;gap:6px}
+.badge-pass{font-size:11px;font-weight:700;color:var(--green);background:#10271a;border:1px solid #1d3a28;border-radius:5px;padding:2px 8px;font-family:var(--mono)}
+
+/* sources */
+.srow{display:flex;align-items:center;gap:14px;padding:13px 16px;border-bottom:1px solid #14202e}
+.srow:last-child{border:0}
+.sico{width:34px;height:34px;border-radius:9px;background:#13202d;display:flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto}
+.srow .sn{font-weight:600;font-size:13.5px}.srow .sn span{display:block;font-size:11.5px;color:var(--mut2);font-weight:400;font-family:var(--mono);margin-top:2px}
+.srow .stat{margin-left:auto;text-align:right;font-family:var(--mono);font-size:12px;color:var(--mut)}
+.live-dot{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-weight:600;font-size:12px}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:#16212f;border:1px solid var(--line2);border-radius:10px;padding:12px 18px;font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:60;box-shadow:0 12px 40px #0008}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.toast b{color:var(--green)}
+
+@media(max-width:860px){
+  .app{grid-template-columns:1fr;grid-template-rows:56px auto 1fr;grid-template-areas:"brand" "top" "main"}
+  .nav{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.rgrid{grid-template-columns:1fr}
+  .topbar{overflow-x:auto}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head>
+<body>
+<div class="app">
+  <div class="brand"><div class="logo"></div><div class="wordmark">CON<b>CORD</b></div></div>
+  <div class="topbar">
+    <div class="crumb" id="crumb"><b>Reconciliation</b> · Dashboard</div>
+    <div class="demo-chip">CONCEPT MAP · sample data</div>
+    <nav class="xnav" style="margin-left:18px"><a href="index.html">▶ Live demo</a><a href="modules.html" class="cur">▣ Dashboard</a><a href="docs.html">How it works</a><a href="glossary.html">Glossary</a></nav>
+    <div class="spacer"></div>
+    <div class="user"><div class="avatar">TF</div><div class="meta"><b>Back-office · TopFX</b><span>concept mockup</span></div></div>
+  </div>
+  <nav class="nav" id="nav">
+    <div class="sect" style="color:var(--green)">Core — shown live</div>
+    <a data-screen="dashboard" class="on"><span class="ico">▣</span> Dashboard</a>
+    <a data-screen="breaks"><span class="ico">⚑</span> Breaks queue <span class="ct" id="navbreaks">24</span></a>
+    <a data-screen="reports"><span class="ico">▤</span> Reports</a>
+    <a data-screen="sources"><span class="ico">⇄</span> Sources</a>
+    <a data-screen="rules"><span class="ico">⚙</span> Matching rules</a>
+    <div class="sect" style="color:var(--amber)">Optional — to confirm</div>
+    <a data-screen="exposure"><span class="ico">◈</span> Exposure <span class="ct" style="background:#241c0d;color:var(--amber)">opt</span></a>
+    <div class="nav-foot">Marios Mintzis<br>Solutions Tech<br><span style="color:#3d4b5e">concept mockup · <a href="index.html" style="color:var(--green)">live demo →</a></span></div>
+  </nav>
+  <main class="main" id="main">
+    <div style="background:#241c0d;border:1px solid #4a3a1c;border-radius:10px;padding:11px 15px;margin-bottom:18px;font-size:12.5px;color:#e8d3a8;line-height:1.5">
+      <b style="color:var(--amber)">This is a concept map, not a running system.</b> Numbers shown are <b>sample data</b>, not TopFX's. It illustrates what reconciliation <i>can</i> cover. Areas marked <b style="color:var(--amber)">Optional</b> are possible modules — real, but to be confirmed against your actual workflow before we build them. The <a href="index.html" style="color:var(--green)">live demo</a> runs real matching on data you upload.
+    </div>
+
+    <!-- DASHBOARD -->
+    <section class="screen on" id="s-dashboard">
+      <div class="h"><div><h1>Reconciliation health</h1></div><div class="sub">Tuesday 24 June · 09:14 — overnight cycle complete</div>
+        <div class="right"><button class="btn">Export day</button><button class="btn green">Run reconciliation ▸</button></div></div>
+      <div class="kpis" id="kpis"></div>
+      <div class="grid2">
+        <div class="card">
+          <div class="ch"><h3>Reconciliation by stream</h3><span class="tag">5 source-pairs · auto-match cascade</span></div>
+          <div class="cb" id="health"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <div class="ch"><h3>Client-money segregation</h3><span class="tag" style="color:var(--amber)">CySEC · optional</span></div>
+            <div class="seg"><div class="ring" style="background:conic-gradient(var(--amber) 0 100%,#16222f 0);color:var(--amber)"><i>opt</i></div>
+              <div class="st"><b style="color:var(--amber)">Optional module — to confirm</b><span>Daily proof that segregated client funds cover client liability. Built to your exact CySEC template and run on <b>your</b> real balances — no figures invented here.</span></div></div>
+          </div>
+          <div class="card" style="flex:1">
+            <div class="ch"><h3>Live alerts</h3><span class="tag">real-time</span></div>
+            <div class="cb feed" id="feed"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BREAKS -->
+    <section class="screen" id="s-breaks">
+      <div class="h"><div><h1>Breaks queue</h1></div><div class="sub" id="brkcount">24 open · €104,452 + $11,940 at risk</div>
+        <div class="right"><button class="btn">Bulk match</button><button class="btn">Export</button></div></div>
+      <div class="filters" id="filters">
+        <div class="fchip on" data-f="all">All <span class="num">24</span></div>
+        <div class="fchip" data-f="fraud">⚠ Suspicious <span class="num">2</span></div>
+        <div class="fchip" data-f="missing">Missing <span class="num">5</span></div>
+        <div class="fchip" data-f="timing">Timing <span class="num">9</span></div>
+        <div class="fchip" data-f="fx">FX / fee <span class="num">6</span></div>
+        <div class="fchip" data-f="dup">Duplicate <span class="num">2</span></div>
+      </div>
+      <div class="card"><table class="tbl"><thead><tr>
+        <th>Break</th><th>Source pair</th><th>Type</th><th style="text-align:right">Amount</th><th>Age</th><th>Status</th><th>Owner</th>
+      </tr></thead><tbody id="brows"></tbody></table></div>
+    </section>
+
+    <!-- EXPOSURE -->
+    <section class="screen" id="s-exposure">
+      <div class="h"><div><h1>Exposure reconciliation <span style="font-size:11px;color:var(--amber);border:1px solid #4a3a1c;background:#241c0d;border-radius:5px;padding:2px 8px;vertical-align:middle;font-weight:600">OPTIONAL — to confirm</span></h1></div><div class="sub">Broker net (B-book) vs hedged at the LP (A-book). A risk / dealing-desk module — included only if it fits your workflow. Figures below are sample data.</div></div>
+      <div class="kpis" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi warn"><div class="lab">Net unhedged</div><div class="val">-€140,200</div><div class="delta">EURUSD · over -€100k threshold</div></div>
+        <div class="kpi good"><div class="lab">Hedge coverage</div><div class="val">96.8%</div><div class="delta up">▲ within policy on 7 of 8</div></div>
+        <div class="kpi"><div class="lab">Symbols watched</div><div class="val">8</div><div class="delta">refresh 1.0s · FIX seq ok</div></div>
+      </div>
+      <div class="card"><div class="ch"><h3>Net vs hedged by symbol</h3><span class="tag">green = within threshold · amber/red = unhedged gap</span></div>
+        <div class="cb" id="exp"></div></div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="screen" id="s-reports">
+      <div class="h"><div><h1>Reports &amp; audit</h1></div><div class="sub">Daily recon, the regulatory pack, management trends — exportable</div></div>
+      <div class="rgrid">
+        <div class="rcard" onclick="toast('Daily reconciliation report generated')"><div class="ri">▤</div><h4>Daily reconciliation</h4><p>Matched vs break by source-pair and currency, with the full cascade audit (which rule, what tolerance).</p><div class="rf">Generate ▸</div></div>
+        <div class="rcard" onclick="toast('Client-money segregation pack ready')"><div class="ri">🛡</div><h4>Client-money segregation <span class="badge-pass" style="background:#241c0d;color:var(--amber);border-color:#4a3a1c">OPTIONAL</span></h4><p>The CySEC report: segregated funds vs client liability, daily surplus/deficit, attestation trail. Built to your template — to be confirmed.</p><div class="rf">Generate ▸</div></div>
+        <div class="rcard" onclick="toast('Audit pack (PDF + evidence) exported')"><div class="ri">🔒</div><h4>Audit pack</h4><p>Immutable evidence export for the auditor/regulator — every match, adjustment and write-off with maker-checker.</p><div class="rf">Export ▸</div></div>
+        <div class="rcard" onclick="toast('Breaks $ trend opened')"><div class="ri">📈</div><h4>Breaks trend</h4><p>Break value over time, time-to-resolve, auto-match rate — the learning matcher compounding.</p><div class="rf">Open ▸</div></div>
+        <div class="rcard" onclick="toast('Exposure history opened')"><div class="ri">◈</div><h4>Exposure history</h4><p>Unhedged exposure over time vs thresholds, breach log, hedge slippage.</p><div class="rf">Open ▸</div></div>
+        <div class="rcard" onclick="toast('IB / partner reconciliation opened')"><div class="ri">⇄</div><h4>IB &amp; partner recon</h4><p>Volume-based commission calculated vs actually paid — over/under-payment to partners.</p><div class="rf">Open ▸</div></div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="screen" id="s-sources">
+      <div class="h"><div><h1>Sources</h1></div><div class="sub">One adapter per system — normalized to one canonical model. <b style="color:var(--amber)">Illustrative — your actual stack to be confirmed.</b></div>
+        <div class="right"><button class="btn">+ Add source</button></div></div>
+      <div class="card" id="sources"></div>
+    </section>
+
+    <!-- RULES -->
+    <section class="screen" id="s-rules">
+      <div class="h"><div><h1>Matching rules</h1></div><div class="sub">Per source-pair cascade: exact → tolerance → fuzzy → break · every match explainable</div></div>
+      <div class="card"><div class="ch"><h3>PSP ↔ CRM ↔ cTrader · funding</h3><span class="tag">the matching cascade · thresholds set with you</span></div>
+        <div class="cb" style="font-size:13px;color:var(--mut);line-height:1.9;font-family:var(--mono)">
+          1 · exact — match on <b style="color:var(--ink)">psp_ref = crm_ref</b>, amount, currency<br>
+          2 · tolerance — amount ±€0.50 (fees), value-date window <b style="color:var(--ink)">±2 days</b> (T+2 settlement)<br>
+          3 · fx — convert at value-date ECB rate, tolerance <b style="color:var(--ink)">±0.15%</b><br>
+          4 · fuzzy — beneficiary + amount + 24h window (probabilistic, ≥0.85)<br>
+          5 · residue → <b style="color:var(--amber)">break</b>, typed + queued
+        </div></div>
+      <div style="margin-top:14px" class="card"><div class="ch"><h3>Learning matcher</h3><span class="tag">human-approved patterns → new rules</span></div>
+        <div class="cb" style="padding:16px;color:var(--mut);font-size:13px">Every manual match an analyst makes is proposed back as a governed, human-approved rule — so the auto-match rate rises over time and the breaks queue shrinks. (The system learns your patterns; no performance numbers are claimed before it has run on your data.)</div></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="scrim" id="scrim" onclick="closeDrill()"></div>
+<aside class="drill" id="drill"></aside>
+<div class="toast" id="toast"></div>
+
+<script>
+const KPIS=[
+  {c:'warn',lab:'Open breaks',val:'24',d:'mismatches in this sample day'},
+  {c:'',lab:'Source pairs',val:'5',d:'systems compared'},
+  {c:'good',lab:'Match cascade',val:'4-pass',d:'exact → tolerance → fuzzy → break'},
+  {c:'',lab:'These figures',val:'sample',d:'your real numbers shown live'},
+];
+const HEALTH=[
+  {pair:'PSP ↔ CRM ↔ cTrader',sub:'client funding · deposits & withdrawals',pct:98.7,brk:4,val:'€12,340',sev:'amber'},
+  {pair:'cTrader deals ↔ LP fills',sub:'A-book hedge · FIX drop-copy',pct:99.2,brk:11,val:'$3,210',sev:'amber'},
+  {pair:'Bank ↔ Ledger',sub:'nostro · MT940 · 4 currencies',pct:96.1,brk:7,val:'€88,902',sev:'red'},
+  {pair:'Swaps & commissions',sub:'cTrader charges ↔ back-office calc',pct:99.8,brk:1,val:'€640',sev:'green'},
+  {pair:'IB / affiliate',sub:'volume calc ↔ paid',pct:99.4,brk:1,val:'€820',sev:'amber'},
+];
+const FEED=[
+  {i:'!',c:'ai-red',t:'<b>Withdrawal sent twice</b> — ref WTH-90412, €4,500, 4 min apart',ts:'09:11 · break #B-2208'},
+  {i:'◷',c:'ai-amber',t:'<b>Deposit credited, PSP unsettled</b> — €2,000 in cTrader, Skrill pending',ts:'08:54 · timing, T+1'},
+  {i:'✓',c:'ai-green',t:'<b>Bank↔Ledger auto-reconciled</b> — 1,284 lines matched in this sample run',ts:'08:32 · sample'},
+  {i:'⟳',c:'ai-blue',t:'<b>New rule promoted</b> — Neteller fee tolerance €0.40 (analyst-approved)',ts:'08:20 · learning matcher'},
+];
+const BREAKS=[
+  {id:'B-2208',pair:'cTrader ↔ PSP',type:'fraud',typ:'⚠ Suspicious',amt:'€4,500.00',ccy:'EUR',age:'18m',agec:'crit',st:'esc',sts:'Escalated',own:'AM',
+    a:{src:'cTrader · balance op',d:true,rows:[['Operation','withdrawal'],['Ref','WTH-90412'],['Account','5,012,883'],['Amount','€4,500.00'],['Time','09:07:11'],['Status','sent']]},
+    b:{src:'cTrader · balance op (2nd)',d:true,miss:false,rows:[['Operation','withdrawal'],['Ref','WTH-90417'],['Account','5,012,883'],['Amount','€4,500.00'],['Time','09:11:02'],['Status','sent']]},
+    ai:{danger:true,v:'<b>Suspected duplicate withdrawal.</b> Two sends, identical amount &amp; beneficiary IBAN, same account, <b>3m51s apart</b> — the second has no distinct client request in the CRM. The pattern matches known double-pay cases. <b>Recommend: HOLD the second payout + escalate to risk before it clears.</b>',conf:94},
+    hist:[['Similar double-pay pattern','illustrative — your real history shown live'],['Earlier near-miss','held in time']]},
+  {id:'B-2199',pair:'PSP ↔ cTrader',type:'timing',typ:'Timing',amt:'€2,000.00',ccy:'EUR',age:'2h',agec:'',st:'open',sts:'Open',own:'—',
+    a:{src:'cTrader · balance op',rows:[['Operation','deposit'],['Ref','DEP-44120'],['Amount','€2,000.00'],['Value date','24 Jun'],['Status','credited']]},
+    b:{src:'Skrill · settlement',d:true,rows:[['Ref','SKR-7781'],['Amount','€2,000.00'],['Value date','25 Jun'],['Status','pending T+1'],['Settled','—']]},
+    ai:{v:'<b>Timing, not a loss.</b> Deposit credited in cTrader; Skrill settles <b>T+1</b> → expected to clear 25 Jun. FX matches, ref matches. <b>Recommend: auto-resolve on settlement</b>, no manual action. Will reconcile in the next cycle.',conf:91},
+    hist:[['Skrill T+1 timing','illustrative — auto-resolves on settlement']]},
+  {id:'B-2186',pair:'Bank ↔ Ledger',type:'missing',typ:'Missing',amt:'€61,300.00',ccy:'EUR',age:'1d',agec:'old',st:'inv',sts:'Investigating',own:'EL',
+    a:{src:'Bank of Cyprus · MT940',rows:[['Credit','€61,300.00'],['Value date','23 Jun'],['Ref','UNIDENTIFIED'],['Counterparty','—'],['Statement','BOC-0623']]},
+    b:{src:'Internal ledger',miss:true,rows:[]},
+    ai:{v:'<b>Unidentified bank credit</b> with no matching ledger entry. Amount aligns with a pending corporate FX settlement (€61,250 + €50 fee). <b>Recommend:</b> match to FX settlement FXS-3391 (tolerance €50 fee) — or hold pending investigation until treasury confirms.',conf:78},
+    hist:[['Unidentified credit · May','matched to FX settlement']]},
+  {id:'B-2174',pair:'cTrader ↔ LP',type:'missing',typ:'Missing fill',amt:'$3,210.00',ccy:'USD',age:'3h',agec:'',st:'open',sts:'Open',own:'—',
+    a:{src:'cTrader · deal',rows:[['Symbol','XAUUSD'],['Volume','12.0 lots'],['Deal','D-771204'],['Side','buy'],['Price','2,331.40']]},
+    b:{src:'LP · FIX fill',miss:true,rows:[]},
+    ai:{v:'<b>Unhedged fill.</b> Client deal booked in cTrader (B-book) with <b>no matching A-book fill</b> from the LP within the window → live unhedged exposure on XAUUSD. <b>Recommend:</b> route to exposure desk; hedge or accept the warehouse risk per policy.',conf:88},
+    hist:[['Missing LP fill','feeds the Exposure screen live']]},
+  {id:'B-2160',pair:'Bank ↔ Ledger',type:'fx',typ:'FX drift',amt:'€612.40',ccy:'EUR',age:'1d',agec:'old',st:'open',sts:'Open',own:'—',
+    a:{src:'Internal ledger',d:true,rows:[['USD amount','$25,000.00'],['Booked FX','1.0840'],['EUR','€23,062.50']]},
+    b:{src:'Bank · settlement',d:true,rows:[['USD amount','$25,000.00'],['Bank FX','1.0867'],['EUR','€23,005.43']]},
+    ai:{v:'<b>FX rounding/spread.</b> Same USD principal, bank applied 1.0867 vs booked 1.0840 → €612 gap, within normal settlement spread. <b>Recommend:</b> auto-post the FX difference to the FX-variance account (tolerance rule).',conf:96},
+    hist:[['FX variance','auto-posted, 6 prior']]},
+  {id:'B-2151',pair:'cTrader ↔ PSP',type:'dup',typ:'Duplicate',amt:'€350.00',ccy:'EUR',age:'5h',agec:'',st:'inv',sts:'Investigating',own:'AM',
+    a:{src:'Checkout.com',d:true,rows:[['Ref','CKO-5521'],['Amount','€350.00'],['Card','••4417'],['Time','04:22']]},
+    b:{src:'Checkout.com (2nd)',d:true,rows:[['Ref','CKO-5524'],['Amount','€350.00'],['Card','••4417'],['Time','04:23']]},
+    ai:{v:'<b>Likely duplicate deposit</b> — same card, same amount, 38s apart. Often a double client submit. <b>Recommend:</b> confirm one is a true intent; refund the duplicate before the chargeback window or credit once.',conf:83},
+    hist:[['Duplicate card deposit','illustrative — most are refunded']]},
+  {id:'B-2140',pair:'Swaps',type:'fee',typ:'Fee',amt:'€640.00',ccy:'EUR',age:'2d',agec:'old',st:'open',sts:'Open',own:'—',
+    a:{src:'cTrader · swap charge',d:true,rows:[['Symbol','EURUSD'],['Nights','3'],['Charged','€2,140']]},
+    b:{src:'Back-office calc',d:true,rows:[['Symbol','EURUSD'],['Nights','3'],['Expected','€2,780']]},
+    ai:{v:'<b>Swap under-charge.</b> Triple-swap Wednesday not applied on a subset → €640 under-accrued. <b>Recommend:</b> post the accrual adjustment; flag the swap-rate config for the rule fix.',conf:90},hist:[['Swap config drift','fixed at source last time']]},
+  {id:'B-2131',pair:'IB / affiliate',type:'fx',typ:'Over-paid',amt:'€820.00',ccy:'EUR',age:'2d',agec:'old',st:'open',sts:'Open',own:'—',
+    a:{src:'IB volume calc',d:true,rows:[['Partner','IB-2207'],['Volume','410 lots'],['Due','€4,100']]},
+    b:{src:'Paid',d:true,rows:[['Partner','IB-2207'],['Paid','€4,920'],['Diff','+€820']]},
+    ai:{v:'<b>IB commission over-payment.</b> Paid €4,920 vs €4,100 due — a rebate tier applied twice. <b>Recommend:</b> recover €820 from next payout; correct the tier rule.',conf:87},hist:[['IB over-pay','recovered via next run, 3 prior']]},
+];
+// illustrative filler rows (sample only) so the queue isn't trivially short
+const FILLER=[['B-2128','PSP ↔ cTrader','timing','Timing','€1,200.00','EUR','timing'],['B-2122','PSP ↔ cTrader','timing','Timing','€640.00','EUR','timing'],['B-2119','cTrader ↔ LP','timing','Timing','$880.00','USD','timing'],['B-2110','Bank ↔ Ledger','fee','Fee','€44.20','EUR','fee'],['B-2104','PSP ↔ cTrader','timing','Timing','€300.00','EUR','timing'],['B-2098','cTrader ↔ LP','fx','FX drift','$210.00','USD','fx'],['B-2090','PSP ↔ cTrader','timing','Timing','€2,500.00','EUR','timing'],['B-2081','PSP ↔ cTrader','missing','Missing','€900.00','EUR','missing'],['B-2077','cTrader ↔ LP','timing','Timing','$1,540.00','USD','timing'],['B-2066','PSP ↔ cTrader','timing','Timing','€120.00','EUR','timing'],['B-2054','Bank ↔ Ledger','missing','Missing','€18,402.00','EUR','missing'],['B-2049','PSP ↔ cTrader','timing','Timing','€760.00','EUR','timing'],['B-2041','cTrader ↔ LP','fx','FX drift','$95.00','USD','fx'],['B-2030','PSP ↔ cTrader','timing','Timing','€410.00','EUR','timing'],['B-2021','PSP ↔ cTrader','missing','Missing','€1,050.00','EUR','missing'],['B-2014','IB / affiliate','fee','Fee','€60.00','EUR','fee']];
+const EXP=[
+  {s:'EURUSD',net:-92,gap:-140,k:'-€140,200',st:'crit',sub:'over -€100k limit'},
+  {s:'XAUUSD',net:60,gap:38,k:'+$38,400',st:'amber',sub:'within -· near limit'},
+  {s:'GBPUSD',net:-20,gap:-8,k:'-€8,100',st:'ok',sub:'within threshold'},
+  {s:'USDJPY',net:30,gap:5,k:'+¥· €5,200',st:'ok',sub:'within threshold'},
+  {s:'BTCUSD',net:-12,gap:-3,k:'-$3,000',st:'ok',sub:'within threshold'},
+  {s:'US500',net:18,gap:2,k:'+€2,100',st:'ok',sub:'within threshold'},
+];
+const SOURCES=[
+  ['◆','cTrader Open API + FIX','trades, deals, balance ops · Spotware','live','synced 28s ago'],
+  ['⊟','Skrill','funding · settlement API','live','synced 1m ago'],
+  ['⊟','Neteller','funding · settlement API','live','synced 1m ago'],
+  ['⊟','Checkout.com','card funding · webhook','live','synced 12s ago'],
+  ['◈','B2BinPay','crypto funding · on-chain + exchange','live','synced 40s ago'],
+  ['▤','Bank of Cyprus','nostro EUR · MT940 · SFTP','daily','03 Jun 08:30'],
+  ['▤','Eurobank','nostro USD · camt.053','daily','03 Jun 08:30'],
+  ['◈','LP · prime broker','A-book hedge · FIX drop-copy','live','seq ok · 1.0s'],
+  ['⇄','CRM','deposits, KYC, IB · read-only','live','synced 2m ago'],
+  ['▤','Xero GL','general ledger · API','live','synced 5m ago'],
+];
+
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+function el(h){const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild}
+
+// KPIs
+$('#kpis').innerHTML=KPIS.map(k=>`<div class="kpi ${k.c}"><div class="lab">${k.lab}</div><div class="val" ${k.count?'data-count="99.1"':''}>${k.val}</div><div class="delta">${k.d}</div></div>`).join('');
+// health
+$('#health').innerHTML=HEALTH.map(h=>`<div class="hrow">
+  <div><div class="pair">${h.pair}<span>${h.sub}</span></div><div class="bar"><i style="width:${h.pct}%"></i></div></div>
+  <div class="pct">${h.pct}% matched</div>
+  <div class="hbreak"><span class="sev"><span class="s-dot s-${h.sev}"></span>${h.brk} breaks</span><b>${h.val}</b></div></div>`).join('');
+// feed
+$('#feed').innerHTML=FEED.map(f=>`<div class="alert"><div class="ai ${f.c}">${f.i}</div><div><div class="at">${f.t}</div><div class="ts">${f.ts}</div></div></div>`).join('');
+// exposure
+$('#exp').innerHTML=EXP.map(e=>{const w=Math.min(Math.abs(e.gap),48);const left=e.gap<0?(50-w):50;
+  return `<div class="exprow"><div class="sym">${e.s}</div>
+  <div class="expbar"><div class="mid"></div><i class="gap ${e.st}" style="left:${left}%;width:${w}%"></i></div>
+  <div class="expval"><b class="${e.st==='crit'?'down':e.st==='ok'?'':'down'}">${e.k}</b><span style="color:var(--mut2);font-size:11px">${e.sub}</span></div></div>`}).join('');
+// sources
+$('#sources').innerHTML=SOURCES.map(s=>`<div class="srow"><div class="sico">${s[0]}</div>
+  <div class="sn">${s[1]}<span>${s[2]}</span></div>
+  <div class="stat">${s[3]==='live'?'<span class="live-dot"><span class="dot"></span>live</span>':'<span style="color:var(--mut)">'+s[3]+'</span>'}<div style="color:var(--mut2);margin-top:3px">${s[4]}</div></div></div>`).join('');
+
+// breaks table
+function pillClass(t){return {fraud:'p-fraud',dup:'p-dup',missing:'p-miss',timing:'p-time',fx:'p-fx',fee:'p-fee'}[t]||'p-fee'}
+function stClass(s){return {esc:'st-esc',open:'st-open',inv:'st-inv',res:'st-res'}[s]||'st-open'}
+function renderBreaks(filter){
+  const main=BREAKS.filter(b=>filter==='all'||b.type===filter);
+  const fill=FILLER.filter(f=>filter==='all'||f[6]===filter);
+  let rows=main.map(b=>`<tr class="brk" data-id="${b.id}">
+    <td class="mono">${b.id}</td><td>${b.pair}</td>
+    <td><span class="pill ${pillClass(b.type)}">${b.typ}</span></td>
+    <td class="amt">${b.amt}</td>
+    <td><span class="age ${b.agec}">${b.age}</span></td>
+    <td><span class="st-pill ${stClass(b.st)}">${b.sts}</span></td>
+    <td>${b.own==='—'?'<span style="color:var(--mut2)">unassigned</span>':'<span class="who"><span class="av">'+b.own+'</span></span>'}</td></tr>`).join('');
+  const ages=['4h','6h','1h','2d','3h','5h','1h','30m','4h','6h','1d','2h','7h','40m','1h','2d'];
+  rows+=fill.map((f,i)=>`<tr class="brk" data-id="${f[0]}" data-light="1">
+    <td class="mono">${f[0]}</td><td>${f[1]}</td>
+    <td><span class="pill ${pillClass(f[6])}">${f[3]}</span></td>
+    <td class="amt">${f[4]}</td><td><span class="age">${ages[i%ages.length]}</span></td>
+    <td><span class="st-pill st-open">Open</span></td><td><span style="color:var(--mut2)">unassigned</span></td></tr>`).join('');
+  $('#brows').innerHTML=rows;
+  $$('#brows tr').forEach(tr=>tr.onclick=()=>{const b=BREAKS.find(x=>x.id===tr.dataset.id); if(b) openDrill(b); else toast('Timing break — auto-resolves on settlement');});
+}
+renderBreaks('all');
+$$('#filters .fchip').forEach(c=>c.onclick=()=>{$$('#filters .fchip').forEach(x=>x.classList.remove('on'));c.classList.add('on');renderBreaks(c.dataset.f)});
+
+// drilldown
+function recHtml(r,label){
+  if(r.miss) return `<div class="rec miss"><div class="src" style="color:var(--amber)"><span class="d" style="background:var(--amber)"></span>${r.src}</div><div class="missrow">⌀ no matching record found</div></div>`;
+  return `<div class="rec"><div class="src"><span class="d"></span>${r.src}</div>${r.rows.map((kv,i)=>`<div class="kv ${r.d&&i>=3?'diff':''}"><span class="k">${kv[0]}</span><span class="v">${kv[1]}</span></div>`).join('')}</div>`;
+}
+function openDrill(b){
+  const ai=b.ai;
+  $('#drill').innerHTML=`
+    <div class="dh"><div class="row1"><div><div class="bid">${b.id} · ${b.pair}</div><h2>${b.typ.replace('⚠ ','')} — ${b.amt}</h2></div>
+      <button class="close" onclick="closeDrill()">×</button></div></div>
+    <div class="db">
+      <div class="lbl">The two sides that should agree</div>
+      <div class="match2">${recHtml(b.a)}${recHtml(b.b)}</div>
+      <div class="aibox ${ai.danger?'danger':''}">
+        <div class="at">◆ Concord · proposed cause</div>
+        <div class="verdict">${ai.v}</div>
+        <div class="conf">confidence <div class="cbar"><i style="width:${ai.conf}%"></i></div> ${ai.conf}%</div>
+      </div>
+      <div class="lbl">Similar breaks (learning matcher)</div>
+      <div class="hist">${b.hist.map(h=>`<div class="hi"><span style="font-family:inherit;color:var(--mut)">${h[0]}</span><span>${h[1]}</span></div>`).join('')}</div>
+      <div class="lbl">Resolve — maker-checker gated</div>
+      <div class="actions">
+        <button class="act match" onclick="toast('Match proposed — sent for four-eyes approval')">✓ Match</button>
+        <button class="act" onclick="toast('Adjustment drafted — pending checker')">± Adjust</button>
+        <button class="act esc" onclick="toast('Escalated to risk desk')">▲ Escalate</button>
+        <button class="act" onclick="toast('Write-off requires checker sign-off')">⊘ Write-off</button>
+      </div>
+      <div class="four">🔒 every action recorded in the immutable audit log · second-approver required</div>
+    </div>`;
+  $('#drill').classList.add('on');$('#scrim').classList.add('on');
+}
+function closeDrill(){$('#drill').classList.remove('on');$('#scrim').classList.remove('on');}
+
+// nav
+$$('#nav a').forEach(a=>a.onclick=()=>{
+  $$('#nav a').forEach(x=>x.classList.remove('on'));a.classList.add('on');
+  const s=a.dataset.screen;$$('.screen').forEach(x=>x.classList.remove('on'));$('#s-'+s).classList.add('on');
+  $('#crumb').innerHTML='<b>'+(s==='breaks'||s==='exposure'||s==='dashboard'?'Reconciliation':'Assure')+'</b> · '+a.textContent.replace(/\d+$/,'').trim();
+  $('#main').scrollTop=0;closeDrill();
+});
+
+// toast
+let tT;function toast(m){const t=$('#toast');t.innerHTML='<b>✓</b> &nbsp;'+m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2600);}
+
+// tiny count-up on the headline KPI
+(function(){const e=document.querySelector('[data-count]');if(!e)return;const to=parseFloat(e.dataset.count);let n=0;const step=()=>{n+=to/28;if(n>=to){e.textContent=to.toFixed(1)+'%';return}e.textContent=n.toFixed(1)+'%';requestAnimationFrame(step)};e.textContent='0.0%';requestAnimationFrame(step)})();
+</script>
+</body></html>
