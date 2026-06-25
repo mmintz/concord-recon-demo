@@ -5,6 +5,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232fd07e'/%3E%3Crect x='9' y='9' width='14' height='14' rx='3' fill='none' stroke='%23072012' stroke-width='2.4'/%3E%3C/svg%3E">
 <title>Concord — Live Reconciliation · TopFX</title>
+<script src="report.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -71,6 +72,17 @@ h1{font-size:28px;margin:0;letter-spacing:-.02em;font-weight:700}
 #samplebtn.primary{animation:invite 1.7s ease-in-out 3}
 #results .card{overflow-x:auto}
 .mapnote{grid-column:1/-1;font-size:12.5px;color:#e8d3a8;background:#241c0d;border:1px solid #4a3a1c;border-radius:9px;padding:10px 13px;margin-top:2px}.mapnote b{color:var(--amber)}
+.samplebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 0;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:11px}
+.samplebar .sbi{font-size:17px;flex:0 0 auto}
+.samplebar .sbt{font-size:12.5px;color:var(--mut);line-height:1.45;flex:1;min-width:220px}.samplebar .sbt b{color:var(--ink);font-weight:600}
+.sbacts{display:flex;gap:7px;flex-wrap:wrap}
+.schip{font-size:12px;font-family:var(--mono);color:var(--mut);background:var(--bg2);border:1px solid var(--line2);border-radius:7px;padding:6px 10px;cursor:pointer;transition:.15s;white-space:nowrap}
+.schip:hover{color:var(--ink);border-color:#36506e;transform:translateY(-1px)}
+#previewSamples{color:var(--green);border-color:#1e5236;background:#14241b}
+.ptbl{width:100%;border-collapse:collapse;font-size:11.5px;font-family:var(--mono)}
+.ptbl th{position:sticky;top:0;background:var(--surface2);color:var(--mut2);text-transform:uppercase;font-size:10px;letter-spacing:.03em;text-align:left;padding:7px 9px;white-space:nowrap;border-bottom:1px solid var(--line)}
+.ptbl td{padding:6px 9px;border-bottom:1px solid #131f2c;white-space:nowrap;color:var(--ink)}
+.ptbl tr:hover td{background:#13202d}
 
 .controls{display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
 .btn{border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:transform .12s,border-color .12s,background .12s}
@@ -244,6 +256,17 @@ th[data-tip],.src[data-tip],.tipword{border-bottom:1px dotted #46586f;cursor:hel
     <span class="privacy">New here? Load the sample set to watch it run. &nbsp;·&nbsp; Nothing is uploaded — it all runs in your browser.</span>
   </div>
 
+  <div class="samplebar">
+    <span class="sbi">📁</span>
+    <span class="sbt">The sample is <b>three exports of one trading day</b> — a payment provider, the CRM, and cTrader. See exactly what gets reconciled before you run it:</span>
+    <span class="sbacts">
+      <button class="schip" id="previewSamples" data-tip="See the three sample files as tables — including the deliberate mismatches Concord is meant to catch.">👁 Preview the data</button>
+      <button class="schip" data-dl="psp" data-tip="Download the payment-provider sample as a CSV.">↓ psp.csv</button>
+      <button class="schip" data-dl="crm" data-tip="Download the CRM sample as a CSV.">↓ crm.csv</button>
+      <button class="schip" data-dl="ct" data-tip="Download the cTrader sample as a CSV.">↓ ctrader.csv</button>
+    </span>
+  </div>
+
   <!-- MAPPING -->
   <div class="mapping" id="mapping">
     <div class="mh">Columns detected &amp; mapped to <span class="tipword" data-tip="Each system names things differently (payment_ref vs crm_ref vs comment; value vs amount vs delta_cents). We read all three into one common shape so they can be compared.">a canonical model</span></div>
@@ -264,8 +287,8 @@ th[data-tip],.src[data-tip],.tipword{border-bottom:1px dotted #46586f;cursor:hel
     <div class="rowhint"><span><b>Click any row</b> to see all three systems side by side and the suggested action.</span>
       <span class="legend"><span class="ld on"></span><span class="ld on"></span><span class="ld on"></span> in all three &nbsp; · &nbsp; <span class="ld on"></span><span class="ld miss"></span><span class="ld miss"></span> missing in some &nbsp;—&nbsp; PSP · CRM · cTrader</span></div>
     <div class="controls" style="margin-top:0 0 12px">
-      <button class="btn" id="exportbtn">↓&nbsp; Export report (CSV)</button>
-      <button class="btn ghost" id="printbtn">Print summary</button>
+      <button class="btn primary" id="reportbtn" data-tip="Generate a clean, dated reconciliation report — summary, the exceptions called out, and the full ledger. Opens in a new tab; print or Save as PDF.">▤&nbsp; Generate report (PDF)</button>
+      <button class="btn" id="exportbtn" data-tip="Download the full result set as a CSV to open in Excel or feed another system.">↓&nbsp; Export data (CSV)</button>
     </div>
     <div class="card"><table><thead><tr>
       <th data-tip="The shared ID used to tie the same payment together across systems.">Reference</th><th data-tip="The account holder.">Client</th><th style="text-align:right" data-tip="The transaction value, in its original currency.">Amount</th><th data-tip="Which of the three systems hold this record — payment provider · CRM · cTrader. Filled dot = present, hollow = missing.">Systems</th><th data-tip="How the transaction reconciled across the three systems.">Result</th><th data-tip="How strong the match is — a rule-based score, not a guarantee.">Confidence</th>
@@ -451,7 +474,8 @@ function normalize(rows,src){
 }
 
 /* ---------- matcher ---------- */
-const ABS=2.0,PCT=0.015,FXT=0.02,DAYMS=86400000,DUPWIN=30*60000;
+const ROUND=0.50,FEEPCT=0.02,FXT=0.0015,DAYMS=86400000,DUPWIN=30*60000;
+const crmPending=c=>!!c&&/PEND|UNCONFIRM|ON.?HOLD|AWAIT/i.test(c.status||'');  // a receipt the back-office hasn't confirmed
 function jaro(s1,s2){if(s1===s2)return 1;const l1=s1.length,l2=s2.length;if(!l1||!l2)return 0;
   const md=Math.max(0,Math.floor(Math.max(l1,l2)/2)-1);const m1=Array(l1).fill(0),m2=Array(l2).fill(0);let m=0;
   for(let i=0;i<l1;i++){const lo=Math.max(0,i-md),hi=Math.min(i+md+1,l2);for(let j=lo;j<hi;j++)if(!m2[j]&&s1[i]===s2[j]){m1[i]=m2[j]=1;m++;break;}}
@@ -499,34 +523,40 @@ function reconcile(psp,crm,ct){
       if(!t){t=ct.find(x=>!x.matched&&x.account===c.account&&Math.abs(x.amount-c.amount)<0.01&&x.ccy===c.ccy&&x.ts&&c.ts&&Math.abs(x.ts-c.ts)<2*DAYMS);if(t)joinedBy='composite';}
       if(t)t.matched=true;
       const sameCcy=p.ccy===c.ccy, dAmt=Math.abs(p.amount-c.amount), pct=dAmt/Math.max(p.amount,c.amount);
+      // a CRM receipt the back-office hasn't confirmed must NEVER be auto-reconciled — flag for review
+      if(crmPending(c)){
+        results.push(mk('REVIEW',{psp:p,crm:c,ct:t},66,p,
+          `Reference ${p.ref} ties PSP ${money(p)} to CRM ${money(c)}, but the CRM still shows the receipt as ${c.status} — the deposit isn't confirmed received.${t?` cTrader was already credited ${money(t)}.`:` No cTrader credit yet.`}`,
+          `Do not treat as reconciled. Confirm the funds actually arrived (gross vs net) before crediting the account.`,'med'));
+        passes.review++; return;
+      }
       // amount-mismatch (ref ties but figures disagree beyond fee tolerance, same currency)
-      if(sameCcy&&dAmt>ABS&&pct>PCT){
+      if(sameCcy&&dAmt>ROUND&&pct>FEEPCT){
         results.push(mk('REVIEW',{psp:p,crm:c,ct:t},70,p,
           `Reference ${p.ref} matches but amounts differ: PSP ${money(p)} vs CRM ${money(c)} (${(pct*100).toFixed(1)}%). Looks like a manual-entry error${t?` — the trading account was credited ${money(t)}`:''}.`,
           `Verify the original request. The client may be over/under-credited by ${cur(c.ccy)}${dAmt.toFixed(2)} — recover or top-up.`,'med'));
         passes.review++; return;
       }
-      // FX (cross-currency) tolerance
+      // FX (cross-currency) tolerance — ±0.15% on the value-date rate
       if(!sameCcy){
         const implied=p.amount/c.amount, exp=parseFloat(c.fx)||implied, drift=Math.abs(implied-exp)/exp;
         const ok=drift<=FXT;
-        results.push(mk('TOLERANCE',{psp:p,crm:c,ct:t},ok?78:60,p,
-          `Cross-currency: ${money(p)} converted to ${money(c)} at ${implied.toFixed(4)} vs booked ${exp.toFixed(4)} (${(drift*100).toFixed(2)}% drift) — ${ok?'within':'OUTSIDE'} the 2% FX tolerance.`,
+        results.push(mk(ok?'TOLERANCE':'REVIEW',{psp:p,crm:c,ct:t},ok?78:60,p,
+          `Cross-currency: ${money(p)} converted to ${money(c)} at ${implied.toFixed(4)} vs booked ${exp.toFixed(4)} (${(drift*100).toFixed(2)}% drift) — ${ok?'within':'OUTSIDE'} the 0.15% FX tolerance.`,
           ok?'Reconciled. Post the minor FX difference to the FX-variance account.':'FX drift over tolerance — confirm the conversion rate with treasury.',ok?'low':'med'));
-        passes.tolerance++; return;
+        ok?passes.tolerance++:passes.review++; return;
       }
-      // fee tolerance (small amount diff)
-      if(dAmt>0.01&&(dAmt<=ABS||pct<=PCT)){
+      // fee tolerance — PSP net vs CRM gross differs by a bounded % (the provider fee)
+      if(dAmt>ROUND&&pct<=FEEPCT){
         results.push(mk('TOLERANCE',{psp:p,crm:c,ct:t},82,p,
-          `Reference matches; PSP settled ${money(p)} net vs CRM gross ${money(c)} — ${cur(c.ccy)}${dAmt.toFixed(2)} processing fee, within tolerance.`,
+          `Reference matches; PSP settled ${money(p)} net vs CRM gross ${money(c)} — ${cur(c.ccy)}${dAmt.toFixed(2)} (${(pct*100).toFixed(1)}%) processing fee, within tolerance.`,
           'Reconciled with fee tolerance. Confirm against the PSP fee schedule.','low'));
         passes.tolerance++; return;
       }
-      // timing: PSP+CRM agree, cTrader credit not yet present
+      // timing: PSP+CRM agree, cTrader credit not yet present — in transit
       if(!t){
-        const lag=p.ts&&c.ts?Math.round(Math.abs(c.ts-p.ts)/DAYMS):1;
         results.push(mk('TOLERANCE',{psp:p,crm:c,ct:null},90,p,
-          `PSP and CRM agree on ${money(p)} but the cTrader credit isn't present yet — settlement lag (T+${lag||1}).`,
+          `PSP and CRM agree on ${money(p)} but the cTrader credit isn't present yet — in transit (settlement lag).`,
           'In-transit. Re-check next cycle; escalate only if the cTrader credit is still missing after T+2.','low'));
         passes.tolerance++; return;
       }
@@ -628,8 +658,9 @@ function run(){
     ['2','Exact reference match',passes.exact+' matched on reference',false],
     ['3','Composite match (amount + account)',passes.composite+' matched where the reference field was blank',false],
     ['4','Tolerance (fee · FX · settlement lag)',passes.tolerance+' matched within tolerance',false],
-    ['5','Duplicate & suspicious detection',(countV('DUPLICATE')+countV('SUSPICIOUS'))+' flagged',true],
-    ['6','Unmatched residue',countV('UNMATCHED')+' with no counterpart',true],
+    ['5','Needs review (amounts differ / unconfirmed receipt)',countV('REVIEW')+' flagged for a human',true],
+    ['6','Duplicate & suspicious detection',(countV('DUPLICATE')+countV('SUSPICIOUS'))+' flagged',true],
+    ['7','Unmatched residue',countV('UNMATCHED')+' with no counterpart',true],
   ];
   $('#passes').innerHTML=steps.map(s=>`<div class="pass ${s[3]?'warn':''}"><div class="pn">${s[0]}</div><div class="pl"><b>${s[1]}</b></div><div class="pc">${s[2]}</div></div>`).join('');
   const els=$$('#passes .pass');
@@ -641,10 +672,12 @@ function showResults(){
   const total=files.psp.rows.length;
   const matched=RESULTS.filter(r=>['MATCHED','TOLERANCE'].includes(r.verdict)).length;
   const exc=RESULTS.filter(r=>['REVIEW','DUPLICATE','SUSPICIOUS','UNMATCHED'].includes(r.verdict)).length;
+  const high=RESULTS.filter(r=>r.severity==='high').length;
   const rate=Math.round(matched/RESULTS.filter(r=>r.legs.psp).length*100);
   $('#hRate').textContent=rate+'%';
   $('#hMatched').textContent=matched+' transactions';
   $('#hExc').textContent=exc;
+  const elEl=document.querySelector('.exc .el');if(elEl)elEl.innerHTML=high>0?`exceptions · <b style="color:var(--red)">${high} high-severity</b>`:'exceptions to review';
   $('#hSub').textContent=`of ${total} payment-provider records`;
   // buckets
   $('#buckets').innerHTML=BUCKETS.map(([v,l,c])=>{const n=v==='all'?RESULTS.length:countV(v);if(v!=='all'&&n===0)return'';
@@ -704,7 +737,7 @@ function openDrill(r){const L=r.legs;const [pc,pl]=PILL[r.verdict];const danger=
   $('#drill').classList.add('on');$('#scrim').classList.add('on');
 }
 function closeDrill(){$('#drill').classList.remove('on');$('#scrim').classList.remove('on');}
-function navDrill(d){if(VIEW.length<2)return;DIDX=(DIDX+d+VIEW.length)%VIEW.length;openDrill(VIEW[DIDX]);}
+function navDrill(d){if(VIEW.length<2||!document.querySelector('#drill .aibox'))return;DIDX=(DIDX+d+VIEW.length)%VIEW.length;openDrill(VIEW[DIDX]);}
 
 /* export */
 function csvCell(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
@@ -715,8 +748,43 @@ function exportCSV(){
       L.psp?'Y':'-',L.crm?'Y':'-',L.ct?'Y':'-', r.verdict, r.verdict==='UNMATCHED'?'n/a':r.confidence+'%', r.severity,
       r.why, r.action].map(csvCell).join(',');}));
   const blob=new Blob([lines.join('\n')],{type:'text/csv'});const u=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=u;a.download='concord-reconciliation-report.csv';a.click();URL.revokeObjectURL(u);
-  toast('Reconciliation report exported (CSV)');
+  const a=document.createElement('a');a.href=u;a.download='concord-reconciliation-data.csv';a.click();URL.revokeObjectURL(u);
+  toast('Result data exported (CSV)');
+}
+
+/* full reconciliation report (printable / PDF) — built from the real run */
+const RTONE={MATCHED:'green',TOLERANCE:'amber',REVIEW:'violet',DUPLICATE:'amber',SUSPICIOUS:'red',UNMATCHED:'grey'};
+const RSEV={high:0,med:1,low:2,none:3};
+const RMEAN={MATCHED:'Agrees across all three systems.',TOLERANCE:'Matched within an agreed small difference (fee, FX, or settlement timing) — counts as reconciled.',REVIEW:'Amounts differ beyond tolerance — needs a human.',DUPLICATE:'The same transaction appears more than once.',SUSPICIOUS:'A credit with nothing behind it, or a pattern worth a look.',UNMATCHED:'Exists in one system with no counterpart in the others.'};
+function reportData(){
+  const total=files.psp.rows.length;
+  const pspLeg=RESULTS.filter(r=>r.legs.psp).length||1;
+  const matched=RESULTS.filter(r=>['MATCHED','TOLERANCE'].includes(r.verdict)).length;
+  const exc=RESULTS.filter(r=>['REVIEW','DUPLICATE','SUSPICIOUS','UNMATCHED'].includes(r.verdict)).length;
+  const isSample=/sample/i.test(files.psp.name||'');
+  const clean=n=>String(n||'').replace(/\s*\(.*\)\s*$/,'');
+  const rows=RESULTS.map(r=>{const L=r.legs,a=L.psp||L.crm||L.ct;
+    return {ref:(L.psp||L.crm||L.ct).ref||(L.ct?L.ct.id:'—'),
+      client:(L.psp||L.crm||{}).client||(L.ct?L.ct.account:'')||'—',
+      amount:a.amount,ccy:a.ccy,amountText:money(a),
+      psp:!!L.psp,crm:!!L.crm,ct:!!L.ct,
+      verdict:r.verdict,verdictLabel:PILL[r.verdict][1],tone:RTONE[r.verdict],
+      confidence:r.verdict==='UNMATCHED'?null:r.confidence,
+      severity:r.severity,sevRank:RSEV[r.severity],
+      flagged:['REVIEW','DUPLICATE','SUSPICIOUS','UNMATCHED'].includes(r.verdict),
+      why:r.why,action:r.action};});
+  const buckets=BUCKETS.filter(b=>b[0]!=='all').map(([v,l,c])=>({key:v,label:l,tone:c,count:countV(v),pct:Math.round(countV(v)/(RESULTS.length||1)*100),meaning:RMEAN[v]||''}));
+  return {live:!isSample,
+    sources:[{label:'Payment provider',name:clean(files.psp.name)||'psp.csv',rows:files.psp.rows.length},
+             {label:'CRM',name:clean(files.crm.name)||'crm.csv',rows:files.crm.rows.length},
+             {label:'cTrader',name:clean(files.ct.name)||'ctrader.csv',rows:files.ct.rows.length}],
+    kpis:{rate:Math.round(matched/pspLeg*100),reconciled:matched,exceptions:exc,total},buckets,rows};
+}
+function openReport(){
+  if(!RESULTS.length){toast('Run the reconciliation first');return;}
+  if(typeof openReconReport!=='function'){toast('Report module not loaded');return;}
+  openReconReport(reportData());
+  toast('Reconciliation report generated — print or Save as PDF');
 }
 let tT;function toast(m){const t=$('#toast');t.innerHTML='<b>✓</b> &nbsp;'+m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2600);}
 
@@ -727,7 +795,28 @@ $$('.uz').forEach(uz=>{['dragover','dragenter'].forEach(ev=>uz.addEventListener(
   uz.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>setFile(uz.dataset.src,f.name,rd.result);rd.readAsText(f);});});
 $$('.uz .rm').forEach(b=>b.onclick=e=>{e.stopPropagation();e.preventDefault();clearFile(b.dataset.src);toast('Removed — drop a new file or load the sample');});
 $('#samplebtn').onclick=()=>{reset();setFile('psp','psp.csv (TopFX sample)',$('#s-psp').textContent);setFile('crm','crm.csv (TopFX sample)',$('#s-crm').textContent);setFile('ct','ctrader.csv (TopFX sample)',$('#s-ct').textContent);toast('Sample set loaded — hit Run reconciliation');};
-$('#runbtn').onclick=run;$('#resetbtn').onclick=reset;$('#exportbtn').onclick=exportCSV;$('#printbtn').onclick=()=>window.print();
+
+/* sample data — let them SEE and download exactly what we load */
+function dlSample(src){const name={psp:'psp.csv',crm:'crm.csv',ct:'ctrader.csv'}[src];const node=$('#s-'+src);if(!node)return;
+  const u=URL.createObjectURL(new Blob([node.textContent.trim()+'\n'],{type:'text/csv'}));
+  const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);toast('Downloaded '+name);}
+function previewSamples(){
+  const files=[['psp','Payment provider','psp.csv'],['crm','CRM / back-office','crm.csv'],['ct','cTrader','ctrader.csv']];
+  let h=`<div class="dh"><div class="bid">TopFX sample set</div><h2>What's in the sample</h2><button class="close" onclick="closeDrill()" aria-label="close">×</button></div><div class="db">
+    <p style="color:var(--mut);font-size:13px;margin:0 0 16px;line-height:1.6">Three exports of the <b style="color:var(--ink)">same trading day</b> — a payment provider, the CRM/back-office, and cTrader. Concord reads all three and flags where they disagree. This is sample data; your own exports will use different column names — <b style="color:var(--ink)">that's expected</b>, the real build maps to your columns.</p>`;
+  files.forEach(([src,label,name])=>{
+    let rows=[];try{rows=parseCSV($('#s-'+src).textContent);}catch(e){}
+    const cols=Object.keys(rows[0]||{});
+    h+=`<div style="margin:0 0 8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font-size:13.5px">${label}</b><span style="color:var(--mut2);font-family:var(--mono);font-size:11.5px">${name} · ${rows.length} rows · ${cols.length} cols</span><button class="schip" style="margin-left:auto" onclick="dlSample('${src}')">↓ download</button></div>
+      <div style="overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin-bottom:6px"><table class="ptbl"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.slice(0,7).map(r=>`<tr>${cols.map(c=>`<td>${r[c]==null?'':String(r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+      ${rows.length>7?`<div style="color:var(--mut2);font-size:11.5px;margin:0 0 18px">+ ${rows.length-7} more rows — download to see all</div>`:'<div style="margin-bottom:18px"></div>'}`;
+  });
+  h+=`</div>`;
+  $('#drill').innerHTML=h;$('#drill').classList.add('on');$('#scrim').classList.add('on');
+}
+$$('.schip[data-dl]').forEach(b=>b.onclick=()=>dlSample(b.dataset.dl));
+$('#previewSamples').onclick=previewSamples;
+$('#runbtn').onclick=run;$('#resetbtn').onclick=reset;$('#exportbtn').onclick=exportCSV;$('#reportbtn').onclick=openReport;
 $('#scrim').onclick=closeDrill;
 document.addEventListener('keydown',e=>{if(!$('#drill').classList.contains('on'))return;
   if(e.key==='Escape')closeDrill();else if(e.key==='ArrowLeft')navDrill(-1);else if(e.key==='ArrowRight')navDrill(1);});

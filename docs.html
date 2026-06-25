@@ -75,12 +75,12 @@ ul.q{margin:10px 0;padding-left:20px;font-size:14px;color:#cfd9e6}ul.q li{margin
 
 <h2><span class="n">02</span> What the demo does</h2>
 <div class="sec">
-<p>It takes three exports — payment provider, CRM, cTrader — and runs a real matching cascade: exact reference, then a tolerant match (small fee / FX / settlement-timing differences), then a fuzzy match, and whatever's left becomes a typed exception. You get a one-screen summary, a filterable list, and a click-in view that shows all three systems side by side with the reason and a suggested next action. Nothing is uploaded anywhere — it all runs in the browser.</p>
+<p>It takes three exports — payment provider, CRM, cTrader — and runs a real matching cascade: exact reference, then a tolerant match (small fee / FX / settlement-timing differences), then a fuzzy match, and whatever's left becomes a typed exception. You get a one-screen summary, a filterable list, and a click-in view that shows all three systems side by side with the reason and a suggested next action — plus a one-click <b>reconciliation report</b> you can print or save as PDF, and a CSV of the full result set. Nothing is uploaded anywhere — it all runs in the browser.</p>
 </div>
 
 <h2><span class="n">03</span> The data the demo expects</h2>
 <div class="sec">
-<p>So you can see exactly what's going in, the demo reads three CSV exports with these shapes (the sample set follows them). It's already tolerant of real-world mess — <b>comma or semicolon files, European or US number formats</b> (<span class="note">1.234,56 or 1,234.56</span>)<b>, different date formats, and differently-named columns</b> all mapped to one common model:</p>
+<p>So you can see exactly what's going in, the demo reads three CSV exports with these shapes (the sample set follows them — and you can <b>preview or download the three sample files</b> right from the demo to see the exact format). It's already tolerant of real-world mess — <b>comma or semicolon files, European or US number formats</b> (<span class="note">1.234,56 or 1,234.56</span>)<b>, different date formats, and differently-named columns</b> all mapped to one common model:</p>
 <div class="schema"><div class="sh"><span class="d"></span>Payment provider</div><code>psp_txn_id, <b>payment_ref</b>, sender_name, account, value, ccy, type, processed_at, state</code></div>
 <div class="schema"><div class="sh"><span class="d"></span>CRM / back-office</div><code>crm_ref, client_name, login, txn_type, amount, currency, value_date, fx_rate, status</code></div>
 <div class="schema"><div class="sh"><span class="d"></span>cTrader balance operations</div><code>balance_id, ctid_account, operation, delta_cents, currency, server_time, comment</code></div>

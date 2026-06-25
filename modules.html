@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232fd07e'/%3E%3Crect x='9' y='9' width='14' height='14' rx='3' fill='none' stroke='%23072012' stroke-width='2.4'/%3E%3C/svg%3E">
+<script src="report.js"></script>
 <style>
 :root{
   --bg:#090d14; --bg2:#0c121c; --surface:#111a26; --surface2:#16212f; --raise:#1a2636;
@@ -126,6 +128,10 @@ button{font-family:inherit}
 .st-open{background:#2a1f0d;color:var(--amber)}.st-inv{background:#0f2236;color:var(--blue)}.st-esc{background:#2a1410;color:var(--red)}.st-res{background:#10271a;color:var(--green)}
 .age{font-family:var(--mono);font-size:12px}.age.old{color:var(--amber)}.age.crit{color:var(--red)}
 .who{display:inline-flex;align-items:center;gap:7px}.who .av{width:22px;height:22px;border-radius:50%;background:#243348;font-size:10px;display:flex;align-items:center;justify-content:center;color:#bcc9d9;font-weight:600}
+.cbx{width:16px;height:16px;accent-color:var(--green);cursor:pointer;vertical-align:middle}
+.tbl tr.sel td{background:#13241b}.tbl tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--green)}
+.tbl tr.resolving{animation:resolve .5s ease forwards}@keyframes resolve{to{opacity:0;transform:translateX(14px)}}
+.tbl td.cb{text-align:center}
 
 /* filters */
 .filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
@@ -202,6 +208,8 @@ button{font-family:inherit}
 .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:#16212f;border:1px solid var(--line2);border-radius:10px;padding:12px 18px;font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:60;box-shadow:0 12px 40px #0008}
 .toast.on{opacity:1;transform:translateX(-50%)}
 .toast b{color:var(--green)}
+.tip{position:fixed;z-index:80;max-width:300px;background:#0c1320;border:1px solid var(--line2);color:var(--ink);font-size:12px;line-height:1.45;padding:9px 11px;border-radius:9px;box-shadow:0 12px 36px #0009;pointer-events:none;opacity:0;transition:opacity .12s}
+.tip.on{opacity:1}
 
 @media(max-width:860px){
   .app{grid-template-columns:1fr;grid-template-rows:56px auto 1fr;grid-template-areas:"brand" "top" "main"}
@@ -238,8 +246,8 @@ button{font-family:inherit}
 
     <!-- DASHBOARD -->
     <section class="screen on" id="s-dashboard">
-      <div class="h"><div><h1>Reconciliation health</h1></div><div class="sub">Tuesday 24 June · 09:14 — overnight cycle complete</div>
-        <div class="right"><button class="btn">Export day</button><button class="btn green">Run reconciliation ▸</button></div></div>
+      <div class="h"><div><h1>Reconciliation health</h1></div><div class="sub" id="cycle">Wednesday 24 June · 09:14 — overnight cycle complete</div>
+        <div class="right"><button class="btn" id="exportDay" data-tip="Open the day's reconciliation report — print or Save as PDF.">↓ Export day</button><button class="btn green" id="runRecon" data-tip="Re-run the match cascade across all sources (simulated on the sample day).">Run reconciliation ▸</button></div></div>
       <div class="kpis" id="kpis"></div>
       <div class="grid2">
         <div class="card">
@@ -262,17 +270,18 @@ button{font-family:inherit}
 
     <!-- BREAKS -->
     <section class="screen" id="s-breaks">
-      <div class="h"><div><h1>Breaks queue</h1></div><div class="sub" id="brkcount">24 open · €104,452 + $11,940 at risk</div>
-        <div class="right"><button class="btn">Bulk match</button><button class="btn">Export</button></div></div>
+      <div class="h"><div><h1>Breaks queue</h1></div><div class="sub" id="brkcount">24 open · €96,609 + $5,935 at risk</div>
+        <div class="right"><button class="btn" id="autoSelect" data-tip="Tick the breaks that clear within tolerance — timing, FX and fee differences — ready to bulk-match.">⤿ Select auto-resolvable</button><button class="btn green" id="bulkMatch" data-tip="Match the ticked breaks in one action. In the real build each match is sent for four-eyes (maker-checker) approval and written to the audit log.">✓ Bulk match</button><button class="btn" id="exportBreaks" data-tip="Download the breaks currently shown as a CSV.">↓ Export</button></div></div>
       <div class="filters" id="filters">
-        <div class="fchip on" data-f="all">All <span class="num">24</span></div>
-        <div class="fchip" data-f="fraud">⚠ Suspicious <span class="num">2</span></div>
-        <div class="fchip" data-f="missing">Missing <span class="num">5</span></div>
-        <div class="fchip" data-f="timing">Timing <span class="num">9</span></div>
-        <div class="fchip" data-f="fx">FX / fee <span class="num">6</span></div>
-        <div class="fchip" data-f="dup">Duplicate <span class="num">2</span></div>
+        <div class="fchip on" data-f="all">All <span class="num" data-c="all">24</span></div>
+        <div class="fchip" data-f="fraud">⚠ Suspicious <span class="num" data-c="fraud">1</span></div>
+        <div class="fchip" data-f="missing">Missing <span class="num" data-c="missing">5</span></div>
+        <div class="fchip" data-f="timing">Timing <span class="num" data-c="timing">10</span></div>
+        <div class="fchip" data-f="fx">FX / fee <span class="num" data-c="fx">7</span></div>
+        <div class="fchip" data-f="dup">Duplicate <span class="num" data-c="dup">1</span></div>
       </div>
       <div class="card"><table class="tbl"><thead><tr>
+        <th style="width:34px;text-align:center"><input type="checkbox" id="selAll" class="cbx" aria-label="Select all breaks"></th>
         <th>Break</th><th>Source pair</th><th>Type</th><th style="text-align:right">Amount</th><th>Age</th><th>Status</th><th>Owner</th>
       </tr></thead><tbody id="brows"></tbody></table></div>
     </section>
@@ -293,19 +302,19 @@ button{font-family:inherit}
     <section class="screen" id="s-reports">
       <div class="h"><div><h1>Reports &amp; audit</h1></div><div class="sub">Daily recon, the regulatory pack, management trends — exportable</div></div>
       <div class="rgrid">
-        <div class="rcard" onclick="toast('Daily reconciliation report generated')"><div class="ri">▤</div><h4>Daily reconciliation</h4><p>Matched vs break by source-pair and currency, with the full cascade audit (which rule, what tolerance).</p><div class="rf">Generate ▸</div></div>
-        <div class="rcard" onclick="toast('Client-money segregation pack ready')"><div class="ri">🛡</div><h4>Client-money segregation <span class="badge-pass" style="background:#241c0d;color:var(--amber);border-color:#4a3a1c">OPTIONAL</span></h4><p>The CySEC report: segregated funds vs client liability, daily surplus/deficit, attestation trail. Built to your template — to be confirmed.</p><div class="rf">Generate ▸</div></div>
-        <div class="rcard" onclick="toast('Audit pack (PDF + evidence) exported')"><div class="ri">🔒</div><h4>Audit pack</h4><p>Immutable evidence export for the auditor/regulator — every match, adjustment and write-off with maker-checker.</p><div class="rf">Export ▸</div></div>
-        <div class="rcard" onclick="toast('Breaks $ trend opened')"><div class="ri">📈</div><h4>Breaks trend</h4><p>Break value over time, time-to-resolve, auto-match rate — the learning matcher compounding.</p><div class="rf">Open ▸</div></div>
-        <div class="rcard" onclick="toast('Exposure history opened')"><div class="ri">◈</div><h4>Exposure history</h4><p>Unhedged exposure over time vs thresholds, breach log, hedge slippage.</p><div class="rf">Open ▸</div></div>
-        <div class="rcard" onclick="toast('IB / partner reconciliation opened')"><div class="ri">⇄</div><h4>IB &amp; partner recon</h4><p>Volume-based commission calculated vs actually paid — over/under-payment to partners.</p><div class="rf">Open ▸</div></div>
+        <div class="rcard" onclick="openDailyReport()" data-tip="Generates a real, dated reconciliation report from this sample day — opens in a new tab, print or Save as PDF."><div class="ri">▤</div><h4>Daily reconciliation</h4><p>Matched vs break by source-pair and currency, with the full cascade audit (which rule, what tolerance).</p><div class="rf">Generate ▸</div></div>
+        <div class="rcard" onclick="toast('Client-money segregation is an optional CySEC module — built to your template and run on your real balances in the full system')"><div class="ri">🛡</div><h4>Client-money segregation <span class="badge-pass" style="background:#241c0d;color:var(--amber);border-color:#4a3a1c">OPTIONAL</span></h4><p>The CySEC report: segregated funds vs client liability, daily surplus/deficit, attestation trail. Built to your template — to be confirmed.</p><div class="rf">Generate ▸</div></div>
+        <div class="rcard" onclick="openAuditPack()" data-tip="Opens the reconciliation evidence. The full build adds maker-checker sign-off + an immutable hash on every line."><div class="ri">🔒</div><h4>Audit pack</h4><p>Immutable evidence export for the auditor/regulator — every match, adjustment and write-off with maker-checker.</p><div class="rf">Export ▸</div></div>
+        <div class="rcard" onclick="gotoScreen('breaks')" data-tip="Opens the live breaks queue."><div class="ri">📈</div><h4>Breaks trend</h4><p>Break value over time, time-to-resolve, auto-match rate — the learning matcher compounding.</p><div class="rf">Open queue ▸</div></div>
+        <div class="rcard" onclick="gotoScreen('exposure')" data-tip="Opens the exposure screen."><div class="ri">◈</div><h4>Exposure history</h4><p>Unhedged exposure over time vs thresholds, breach log, hedge slippage.</p><div class="rf">Open ▸</div></div>
+        <div class="rcard" onclick="toast('IB / partner reconciliation — optional module: commission due vs paid, over/under-payment per partner')"><div class="ri">⇄</div><h4>IB &amp; partner recon</h4><p>Volume-based commission calculated vs actually paid — over/under-payment to partners.</p><div class="rf">Open ▸</div></div>
       </div>
     </section>
 
     <!-- SOURCES -->
     <section class="screen" id="s-sources">
       <div class="h"><div><h1>Sources</h1></div><div class="sub">One adapter per system — normalized to one canonical model. <b style="color:var(--amber)">Illustrative — your actual stack to be confirmed.</b></div>
-        <div class="right"><button class="btn">+ Add source</button></div></div>
+        <div class="right"><button class="btn" id="addSource" data-tip="In the full build, new adapters (a PSP, a second bank, the GL) are connected during onboarding.">+ Add source</button></div></div>
       <div class="card" id="sources"></div>
     </section>
 
@@ -348,7 +357,7 @@ const HEALTH=[
 const FEED=[
   {i:'!',c:'ai-red',t:'<b>Withdrawal sent twice</b> — ref WTH-90412, €4,500, 4 min apart',ts:'09:11 · break #B-2208'},
   {i:'◷',c:'ai-amber',t:'<b>Deposit credited, PSP unsettled</b> — €2,000 in cTrader, Skrill pending',ts:'08:54 · timing, T+1'},
-  {i:'✓',c:'ai-green',t:'<b>Bank↔Ledger auto-reconciled</b> — 1,284 lines matched in this sample run',ts:'08:32 · sample'},
+  {i:'✓',c:'ai-green',t:'<b>Bank↔Ledger auto-reconciled</b> — full cascade matched in this sample run',ts:'08:32 · sample'},
   {i:'⟳',c:'ai-blue',t:'<b>New rule promoted</b> — Neteller fee tolerance €0.40 (analyst-approved)',ts:'08:20 · learning matcher'},
 ];
 const BREAKS=[
@@ -402,16 +411,16 @@ const EXP=[
   {s:'US500',net:18,gap:2,k:'+€2,100',st:'ok',sub:'within threshold'},
 ];
 const SOURCES=[
-  ['◆','cTrader Open API + FIX','trades, deals, balance ops · Spotware','live','synced 28s ago'],
-  ['⊟','Skrill','funding · settlement API','live','synced 1m ago'],
-  ['⊟','Neteller','funding · settlement API','live','synced 1m ago'],
-  ['⊟','Checkout.com','card funding · webhook','live','synced 12s ago'],
-  ['◈','B2BinPay','crypto funding · on-chain + exchange','live','synced 40s ago'],
-  ['▤','Bank of Cyprus','nostro EUR · MT940 · SFTP','daily','03 Jun 08:30'],
-  ['▤','Eurobank','nostro USD · camt.053','daily','03 Jun 08:30'],
-  ['◈','LP · prime broker','A-book hedge · FIX drop-copy','live','seq ok · 1.0s'],
-  ['⇄','CRM','deposits, KYC, IB · read-only','live','synced 2m ago'],
-  ['▤','Xero GL','general ledger · API','live','synced 5m ago'],
+  ['◆','cTrader Open API + FIX','trades, deals, balance ops · Spotware','live','live feed'],
+  ['⊟','Skrill','funding · settlement API','live','live feed'],
+  ['⊟','Neteller','funding · settlement API','live','live feed'],
+  ['⊟','Checkout.com','card funding · webhook','live','live feed'],
+  ['◈','B2BinPay','crypto funding · on-chain + exchange','live','live feed'],
+  ['▤','Bank of Cyprus','nostro EUR · MT940 · SFTP','daily','daily batch'],
+  ['▤','Eurobank','nostro USD · camt.053','daily','daily batch'],
+  ['◈','LP · prime broker','A-book hedge · FIX drop-copy','live','FIX session'],
+  ['⇄','CRM','deposits, KYC, IB · read-only','live','live feed'],
+  ['▤','Xero GL','general ledger · API','live','live feed'],
 ];
 
 const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
@@ -436,30 +445,84 @@ $('#sources').innerHTML=SOURCES.map(s=>`<div class="srow"><div class="sico">${s[
   <div class="sn">${s[1]}<span>${s[2]}</span></div>
   <div class="stat">${s[3]==='live'?'<span class="live-dot"><span class="dot"></span>live</span>':'<span style="color:var(--mut)">'+s[3]+'</span>'}<div style="color:var(--mut2);margin-top:3px">${s[4]}</div></div></div>`).join('');
 
-// breaks table
+// breaks table — one stateful queue (select · bulk-match · export · live counts)
 function pillClass(t){return {fraud:'p-fraud',dup:'p-dup',missing:'p-miss',timing:'p-time',fx:'p-fx',fee:'p-fee'}[t]||'p-fee'}
 function stClass(s){return {esc:'st-esc',open:'st-open',inv:'st-inv',res:'st-res'}[s]||'st-open'}
-function renderBreaks(filter){
-  const main=BREAKS.filter(b=>filter==='all'||b.type===filter);
-  const fill=FILLER.filter(f=>filter==='all'||f[6]===filter);
-  let rows=main.map(b=>`<tr class="brk" data-id="${b.id}">
+const BAGES=['4h','6h','1h','2d','3h','5h','1h','30m','4h','6h','1d','2h','7h','40m','1h','2d'];
+const QUEUE=BREAKS.map(b=>({...b,resolved:false,selected:false,rich:true})).concat(
+  FILLER.map((f,i)=>({id:f[0],pair:f[1],type:f[2],typ:f[3],amt:f[4],ccy:f[5],age:BAGES[i%BAGES.length],agec:'',st:'open',sts:'Open',own:'—',resolved:false,selected:false,rich:false})));
+const AUTO=['timing','fx','fee'];     // clear within tolerance → the usual bulk-match candidates
+let BFILTER='all';
+const openItems=()=>QUEUE.filter(b=>!b.resolved);
+const visItems=()=>openItems().filter(b=>BFILTER==='all'||b.type===BFILTER||(BFILTER==='fx'&&b.type==='fee'));  // "FX / fee" chip covers both
+function parseAmt(a){const ccy=a[0]==='$'?'USD':a[0]==='£'?'GBP':'EUR';return{ccy,v:parseFloat(a.replace(/[^0-9.]/g,''))||0};}
+function fmtMoney(ccy,v){return ({EUR:'€',USD:'$',GBP:'£'}[ccy]||'')+v.toLocaleString('en-US',{maximumFractionDigits:0});}
+function updateCounts(){
+  const open=openItems(),sums={};
+  open.forEach(b=>{const{ccy,v}=parseAmt(b.amt);sums[ccy]=(sums[ccy]||0)+v;});
+  const risk=Object.keys(sums).map(c=>fmtMoney(c,sums[c])).join(' + ')||'€0';
+  $('#navbreaks').textContent=open.length;
+  $('#brkcount').textContent=`${open.length} open · ${risk} at risk`;
+  $$('#filters .num').forEach(n=>{const f=n.dataset.c;n.textContent=f==='all'?open.length:open.filter(b=>b.type===f||(f==='fx'&&b.type==='fee')).length;});
+  const dk=document.querySelector('#kpis .kpi .val');if(dk)dk.textContent=open.length;
+}
+function renderBreaks(){
+  const list=visItems();
+  $('#brows').innerHTML=list.map(b=>`<tr class="brk ${b.selected?'sel':''}" data-id="${b.id}">
+    <td class="cb"><input type="checkbox" class="cbx rowcb" ${b.selected?'checked':''} aria-label="Select ${b.id}"></td>
     <td class="mono">${b.id}</td><td>${b.pair}</td>
     <td><span class="pill ${pillClass(b.type)}">${b.typ}</span></td>
     <td class="amt">${b.amt}</td>
     <td><span class="age ${b.agec}">${b.age}</span></td>
     <td><span class="st-pill ${stClass(b.st)}">${b.sts}</span></td>
-    <td>${b.own==='—'?'<span style="color:var(--mut2)">unassigned</span>':'<span class="who"><span class="av">'+b.own+'</span></span>'}</td></tr>`).join('');
-  const ages=['4h','6h','1h','2d','3h','5h','1h','30m','4h','6h','1d','2h','7h','40m','1h','2d'];
-  rows+=fill.map((f,i)=>`<tr class="brk" data-id="${f[0]}" data-light="1">
-    <td class="mono">${f[0]}</td><td>${f[1]}</td>
-    <td><span class="pill ${pillClass(f[6])}">${f[3]}</span></td>
-    <td class="amt">${f[4]}</td><td><span class="age">${ages[i%ages.length]}</span></td>
-    <td><span class="st-pill st-open">Open</span></td><td><span style="color:var(--mut2)">unassigned</span></td></tr>`).join('');
-  $('#brows').innerHTML=rows;
-  $$('#brows tr').forEach(tr=>tr.onclick=()=>{const b=BREAKS.find(x=>x.id===tr.dataset.id); if(b) openDrill(b); else toast('Timing break — auto-resolves on settlement');});
+    <td>${b.own==='—'?'<span style="color:var(--mut2)">unassigned</span>':'<span class="who"><span class="av">'+b.own+'</span></span>'}</td></tr>`).join('')
+    || `<tr><td colspan="8" style="text-align:center;color:var(--mut2);padding:26px">No breaks in this view — queue clear ✓</td></tr>`;
+  $$('#brows tr.brk').forEach(tr=>{
+    const b=QUEUE.find(x=>x.id===tr.dataset.id);
+    const cb=tr.querySelector('.rowcb');
+    cb.onclick=e=>{e.stopPropagation();b.selected=cb.checked;tr.classList.toggle('sel',b.selected);syncSelAll();updateBulkBtn();};
+    tr.onclick=()=>{ if(b&&b.rich) openDrill(b); else toast(b&&b.type==='timing'?'Timing break — auto-resolves on settlement (T+1 / T+2)':'Sample row — open a flagged break (B-2208, B-2186…) for the full match view'); };
+  });
+  syncSelAll();updateBulkBtn();
 }
-renderBreaks('all');
-$$('#filters .fchip').forEach(c=>c.onclick=()=>{$$('#filters .fchip').forEach(x=>x.classList.remove('on'));c.classList.add('on');renderBreaks(c.dataset.f)});
+function syncSelAll(){const vis=visItems();const s=$('#selAll');if(!s)return;const all=vis.length&&vis.every(b=>b.selected);s.checked=!!all;s.indeterminate=!all&&vis.some(b=>b.selected);}
+function updateBulkBtn(){const n=openItems().filter(b=>b.selected).length;$('#bulkMatch').textContent=n?`✓ Bulk match (${n})`:'✓ Bulk match';}
+function bulkMatch(){
+  const sel=visItems().filter(b=>b.selected);
+  if(!sel.length){toast('Tick the breaks to match — or hit “Select auto-resolvable” for the timing / FX / fee ones');return;}
+  sel.forEach(b=>{const tr=$(`#brows tr[data-id="${b.id}"]`);if(tr)tr.classList.add('resolving');});
+  const ids=sel.map(b=>b.id);
+  setTimeout(()=>{QUEUE.forEach(b=>{if(ids.includes(b.id)){b.resolved=true;b.selected=false;}});renderBreaks();updateCounts();
+    toast(`<b>${ids.length}</b> break${ids.length>1?'s':''} matched — sent for four-eyes approval · audit-logged`);},480);
+}
+function exportBreaks(){
+  const list=visItems();
+  if(!list.length){toast('Nothing to export in this view');return;}
+  const head=['break_id','source_pair','type','amount','currency','age','status','owner'];
+  const lines=[head.join(',')].concat(list.map(b=>{const{ccy}=parseAmt(b.amt);
+    return [b.id,b.pair,b.typ.replace('⚠ ',''),b.amt,ccy,b.age,b.sts,b.own==='—'?'unassigned':b.own].map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',');}));
+  const u=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));
+  const a=document.createElement('a');a.href=u;a.download='concord-breaks-queue.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);
+  toast(`Exported <b>${list.length}</b> break${list.length>1?'s':''} (CSV)`);
+}
+function selectAuto(){
+  const cand=visItems().filter(b=>AUTO.includes(b.type));
+  if(!cand.length){toast('No auto-resolvable (timing / FX / fee) breaks in this view');return;}
+  cand.forEach(b=>b.selected=true);renderBreaks();
+  toast(`Selected <b>${cand.length}</b> auto-resolvable break${cand.length>1?'s':''} — review, then Bulk match`);
+}
+function resolveFromDrill(id,kind){
+  const b=QUEUE.find(x=>x.id===id);if(!b)return;
+  if(kind==='match'){b.resolved=true;toast('Match proposed — sent for four-eyes approval · audit-logged');}
+  else if(kind==='adjust'){b.st='inv';b.sts='Adjusting';toast('Adjustment drafted — pending checker sign-off');}
+  else if(kind==='escalate'){b.st='esc';b.sts='Escalated';toast('Escalated to the risk desk');}
+  else if(kind==='writeoff'){b.resolved=true;toast('Write-off drafted — requires checker sign-off');}
+  closeDrill();renderBreaks();updateCounts();
+}
+renderBreaks();updateCounts();
+$$('#filters .fchip').forEach(c=>c.onclick=()=>{$$('#filters .fchip').forEach(x=>x.classList.remove('on'));c.classList.add('on');BFILTER=c.dataset.f;renderBreaks();});
+$('#selAll').onclick=e=>{const ck=e.target.checked;visItems().forEach(b=>b.selected=ck);renderBreaks();};
+$('#bulkMatch').onclick=bulkMatch;$('#exportBreaks').onclick=exportBreaks;$('#autoSelect').onclick=selectAuto;
 
 // drilldown
 function recHtml(r,label){
@@ -483,10 +546,10 @@ function openDrill(b){
       <div class="hist">${b.hist.map(h=>`<div class="hi"><span style="font-family:inherit;color:var(--mut)">${h[0]}</span><span>${h[1]}</span></div>`).join('')}</div>
       <div class="lbl">Resolve — maker-checker gated</div>
       <div class="actions">
-        <button class="act match" onclick="toast('Match proposed — sent for four-eyes approval')">✓ Match</button>
-        <button class="act" onclick="toast('Adjustment drafted — pending checker')">± Adjust</button>
-        <button class="act esc" onclick="toast('Escalated to risk desk')">▲ Escalate</button>
-        <button class="act" onclick="toast('Write-off requires checker sign-off')">⊘ Write-off</button>
+        <button class="act match" onclick="resolveFromDrill('${b.id}','match')">✓ Match</button>
+        <button class="act" onclick="resolveFromDrill('${b.id}','adjust')">± Adjust</button>
+        <button class="act esc" onclick="resolveFromDrill('${b.id}','escalate')">▲ Escalate</button>
+        <button class="act" onclick="resolveFromDrill('${b.id}','writeoff')">⊘ Write-off</button>
       </div>
       <div class="four">🔒 every action recorded in the immutable audit log · second-approver required</div>
     </div>`;
@@ -507,5 +570,54 @@ let tT;function toast(m){const t=$('#toast');t.innerHTML='<b>✓</b> &nbsp;'+m;t
 
 // tiny count-up on the headline KPI
 (function(){const e=document.querySelector('[data-count]');if(!e)return;const to=parseFloat(e.dataset.count);let n=0;const step=()=>{n+=to/28;if(n>=to){e.textContent=to.toFixed(1)+'%';return}e.textContent=n.toFixed(1)+'%';requestAnimationFrame(step)};e.textContent='0.0%';requestAnimationFrame(step)})();
+
+// ---- screen nav helper, dashboard + sources actions ----
+function gotoScreen(s){const a=document.querySelector(`#nav a[data-screen="${s}"]`);if(a)a.click();}
+$('#exportDay').onclick=()=>openDailyReport();
+$('#runRecon').onclick=function(){const btn=this;if(btn.dataset.busy)return;btn.dataset.busy='1';const o=btn.textContent;btn.textContent='Reconciling…';btn.style.opacity='.7';toast('Running the match cascade on the sample day…');
+  setTimeout(()=>{btn.textContent=o;btn.style.opacity='';btn.dataset.busy='';const c=$('#cycle');if(c)c.textContent='Manual cycle · just now — sample run complete';toast('<b>Sample cycle complete</b> — cascade run · '+openItems().length+' breaks queued');},1300);};
+$('#addSource').onclick=()=>toast('New source adapters (a PSP, a second bank, the GL) are connected during onboarding — e.g. PayPal, Trustly, Eurobank');
+
+// ---- real Daily reconciliation report (printable / PDF), built on consistent sample data ----
+const RCUR=c=>({USD:'$',EUR:'€',GBP:'£'})[c]||(c+' ');
+const rmoney=(ccy,v)=>RCUR(ccy)+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const RMEAN2={MATCHED:'Agrees across all three systems.',TOLERANCE:'Matched within an agreed small difference (fee, FX, or settlement timing) — counts as reconciled.',REVIEW:'Amounts differ beyond tolerance — needs a human.',DUPLICATE:'The same transaction appears more than once.',SUSPICIOUS:'A credit with nothing behind it, or a pattern worth a look.',UNMATCHED:'Exists in one system with no counterpart in the others.'};
+function dailyReportData(){
+  const names=['A. Petrou','M. Ioannou','D. Georgiou','S. Nikolaou','K. Andreou','L. Christou','N. Pavlou','E. Demetriou','R. Vasquez','T. Muller','J. Novak','P. Oketch','H. Tanaka','F. Rossi','C. Mensah','B. Costa','V. Singh','O. Haddad','G. Larsen','W. Zhang'];
+  const ccys=['EUR','EUR','EUR','USD','EUR','GBP','EUR','USD'];
+  const rows=[];
+  for(let i=0;i<96;i++){const dep=i%4!==0;const ccy=ccys[i%ccys.length];const amt=Math.round((((i*53+137)%920)+60)*100)/100+(i%6)*90;
+    rows.push({ref:(dep?'DEP-':'WTH-')+(44000+i*7),client:names[i%names.length],amount:amt,ccy,amountText:rmoney(ccy,amt),psp:true,crm:true,ct:true,verdict:'MATCHED',verdictLabel:'Matched',tone:'green',confidence:96+(i%4),severity:'none',sevRank:3,flagged:false,why:'',action:''});}
+  [['DEP-44890','M. Ioannou',2000,'EUR',true,true,false,'Deposit credited in cTrader; Skrill settles T+1 — clears next cycle.'],
+   ['FXS-3380','treasury',612.40,'EUR',true,true,true,'FX spread within tolerance — auto-posted to FX-variance.'],
+   ['SWP-1190','EURUSD book',640,'EUR',true,true,true,'Swap accrual within fee tolerance — adjustment posted.']]
+   .forEach(t=>rows.push({ref:t[0],client:t[1],amount:t[2],ccy:t[3],amountText:rmoney(t[3],t[2]),psp:t[4],crm:t[5],ct:t[6],verdict:'TOLERANCE',verdictLabel:'Tolerance',tone:'amber',confidence:90,severity:'low',sevRank:2,flagged:false,why:t[7],action:''}));
+  [{ref:'DEP-44120',client:'A. Petrou',amount:2000,ccy:'EUR',psp:true,crm:true,ct:false,verdict:'UNMATCHED',verdictLabel:'Paid, not credited',tone:'grey',confidence:null,severity:'high',sevRank:0,why:'€2,000 received by the PSP and recorded in CRM, but never credited in cTrader — the client paid and was not credited.',action:'Trace and credit the account before the client complains.'},
+   {ref:'XAU-D771204',client:'acct 5,019,004',amount:3210,ccy:'USD',psp:false,crm:false,ct:true,verdict:'SUSPICIOUS',verdictLabel:'Credited, not paid',tone:'red',confidence:88,severity:'high',sevRank:0,why:'XAUUSD position credited in cTrader with no payment and no CRM record behind it — credited but never paid.',action:'Investigate immediately — funds added to a trading account with nothing behind them.'},
+   {ref:'WTH-90417',client:'acct 5,012,883',amount:4500,ccy:'EUR',psp:false,crm:false,ct:true,verdict:'SUSPICIOUS',verdictLabel:'Suspected duplicate',tone:'red',confidence:94,severity:'high',sevRank:0,why:'Second €4,500 withdrawal to the same beneficiary 3m51s after the first, no distinct CRM request — suspected double payout.',action:'HOLD the second payout and escalate to risk before it clears.'},
+   {ref:'BOC-0623',client:'unidentified',amount:61300,ccy:'EUR',psp:true,crm:false,ct:false,verdict:'UNMATCHED',verdictLabel:'Unmatched',tone:'grey',confidence:null,severity:'med',sevRank:1,why:'€61,300 bank credit with no matching ledger entry. Aligns with pending FX settlement FXS-3391 (+€50 fee).',action:'Match to FXS-3391 within fee tolerance, or hold pending treasury confirmation.'},
+   {ref:'CKO-5524',client:'card ••4417',amount:350,ccy:'EUR',psp:true,crm:false,ct:true,verdict:'DUPLICATE',verdictLabel:'Duplicate',tone:'amber',confidence:83,severity:'med',sevRank:1,why:'Same card, same €350, 38s after CKO-5521 — likely a double client submit.',action:'Confirm one true intent; refund the duplicate before the chargeback window.'},
+   {ref:'IB-2207',client:'partner IB-2207',amount:820,ccy:'EUR',psp:true,crm:true,ct:false,verdict:'REVIEW',verdictLabel:'Needs review',tone:'violet',confidence:87,severity:'med',sevRank:1,why:'IB commission paid €4,920 vs €4,100 due — a rebate tier applied twice (+€820).',action:'Recover €820 from the next payout; correct the tier rule.'}]
+   .forEach(e=>{e.amountText=rmoney(e.ccy,e.amount);e.flagged=true;rows.push(e);});
+  const total=rows.length;
+  const matched=rows.filter(r=>['MATCHED','TOLERANCE'].includes(r.verdict)).length;
+  const flagged=rows.filter(r=>r.flagged).length;
+  const buckets=[['MATCHED','Matched','green'],['TOLERANCE','Tolerance','amber'],['REVIEW','Needs review','violet'],['DUPLICATE','Duplicate','amber'],['SUSPICIOUS','Suspicious','red'],['UNMATCHED','Unmatched','grey']]
+    .map(([k,l,t])=>{const c=rows.filter(r=>r.verdict===k).length;return{key:k,label:l,tone:t,count:c,pct:Math.round(c/total*100),meaning:RMEAN2[k]};});
+  return {live:false,generated:null,
+    sources:[{label:'Payment provider',name:'psp-funding.csv',rows:total-2},{label:'CRM',name:'crm-deposits.csv',rows:total-4},{label:'cTrader',name:'ctrader-balance-ops.csv',rows:total-3}],
+    kpis:{rate:Math.round(matched/total*100),reconciled:matched,exceptions:flagged,total},buckets,rows};
+}
+function openDailyReport(){if(typeof openReconReport!=='function'){toast('Report module not loaded');return;}openReconReport(dailyReportData());toast('Daily reconciliation report generated — print or Save as PDF');}
+function openAuditPack(){if(typeof openReconReport!=='function'){toast('Report module not loaded');return;}openReconReport(dailyReportData());toast('Audit pack exported — the full build adds maker-checker sign-off + an immutable hash per line');}
+
+// ---- hover tooltips (desktop) for [data-tip] ----
+const TIP=document.createElement('div');TIP.className='tip';document.body.appendChild(TIP);
+function showTip(el){const t=el.getAttribute('data-tip');if(!t)return;TIP.textContent=t;TIP.classList.add('on');const r=el.getBoundingClientRect();TIP.style.left='0';TIP.style.top='0';const tw=TIP.offsetWidth,th=TIP.offsetHeight;let x=Math.min(Math.max(8,r.left),innerWidth-tw-8),y=r.bottom+8;if(y+th>innerHeight-8)y=r.top-th-8;TIP.style.left=x+'px';TIP.style.top=y+'px';}
+function hideTip(){TIP.classList.remove('on');}
+if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+  document.addEventListener('mouseover',e=>{const el=e.target.closest('[data-tip]');if(el)showTip(el);});
+  document.addEventListener('mouseout',e=>{if(e.target.closest('[data-tip]'))hideTip();});
+}
 </script>
 </body></html>
