@@ -41,22 +41,40 @@ h1{font-size:28px;margin:0;letter-spacing:-.02em;font-weight:700}
 
 /* upload */
 .uploads{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 0}
-.uz{background:var(--surface);border:1.5px dashed var(--line2);border-radius:13px;padding:18px 16px;text-align:center;transition:.2s;position:relative}
-.uz.drag{border-color:var(--green);background:#10241a}
-.uz.has{border-style:solid;border-color:#1e5236;background:#0f1f17;text-align:left}
+.uz{background:var(--surface);border:1.5px dashed var(--line2);border-radius:14px;padding:22px 16px 20px;text-align:center;transition:transform .15s,border-color .15s,background .15s,box-shadow .15s;position:relative;cursor:pointer}
+.uz:hover{border-color:#3a5474;background:var(--surface2);transform:translateY(-2px);box-shadow:0 10px 24px #0007}
+.uz.drag{border-color:var(--green);background:#0f2a1c;border-style:solid;box-shadow:0 0 0 3px #2fd07e2e;transform:translateY(-2px)}
+.uz.has{border-style:solid;border-color:#1e5236;background:#0f1f17;text-align:left;cursor:default}
+.uz.has:hover{transform:none;box-shadow:none;border-color:#1e5236;background:#0f1f17}
 .uz .src{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut2);font-weight:700}
-.uz .ic{margin:9px 0 7px;color:var(--green);opacity:.92}
-.uz .ic svg{width:26px;height:26px;vertical-align:middle}
+.uz .ic{margin:10px 0 8px;color:var(--green);opacity:.92;transition:transform .15s}
+.uz:hover .ic{transform:scale(1.09)}
+.uz .ic svg{width:28px;height:28px;vertical-align:middle}
 .uz .hint{font-size:12.5px;color:var(--mut)}
 .uz .fname{font-family:var(--mono);font-size:12.5px;color:var(--green);margin-top:7px;word-break:break-all}
 .uz .meta{font-size:11.5px;color:var(--mut);font-family:var(--mono);margin-top:3px}
 .uz input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.uz .pick{color:var(--blue);font-size:12.5px;text-decoration:underline;display:inline-block;margin-top:6px}
-.uz .ok{position:absolute;top:12px;right:13px;color:var(--green);font-size:15px}
+.uz.has input{display:none}
+.uz .pick{color:var(--blue);font-size:12.5px;display:inline-block;margin-top:8px;font-weight:600}
+.uz .pick u{text-decoration:underline}.uz:hover .pick{color:#85c2ff}
+.uz .drophint{display:none;font-size:13.5px;color:var(--green);font-weight:700;margin-top:8px}
+.uz.drag .drophint{display:block}.uz.drag .hint,.uz.drag .pick{visibility:hidden}
+.uz .ok{position:absolute;top:11px;left:13px;color:var(--green);font-size:13px;font-weight:700}
+.uz .rm{position:absolute;top:8px;right:9px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line2);background:#16212f;color:var(--mut);font-size:15px;line-height:1;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:4}
+.uz.has .rm{display:flex}.uz .rm:hover{color:var(--red);border-color:#5a2420;background:#1f1011}
+.dnav{position:absolute;top:14px;right:54px;display:flex;align-items:center;gap:5px}
+.dnav button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line2);background:var(--surface);color:var(--ink);font-size:17px;line-height:1;cursor:pointer}
+.dnav button:hover{border-color:#36506e;background:var(--surface2)}
+.dnav span{font-family:var(--mono);font-size:11.5px;color:var(--mut);min-width:38px;text-align:center}
+@keyframes invite{0%,100%{box-shadow:0 0 0 0 #2fd07e00}50%{box-shadow:0 0 0 5px #2fd07e2a}}
+#samplebtn.primary{animation:invite 1.7s ease-in-out 3}
+#results .card{overflow-x:auto}
+.mapnote{grid-column:1/-1;font-size:12.5px;color:#e8d3a8;background:#241c0d;border:1px solid #4a3a1c;border-radius:9px;padding:10px 13px;margin-top:2px}.mapnote b{color:var(--amber)}
 
 .controls{display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
-.btn{border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
-.btn:hover{border-color:#36506e;background:var(--surface2)}
+.btn{border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:transform .12s,border-color .12s,background .12s}
+.btn:hover{border-color:#36506e;background:var(--surface2);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}.btn:disabled{cursor:default;transform:none;opacity:.55}
 .btn.primary{background:#15331f;border-color:#1e6e3f;color:var(--green)}
 .btn.primary:hover{background:#184026}
 .btn.primary:disabled{opacity:.4;cursor:not-allowed;background:var(--surface);border-color:var(--line);color:var(--mut)}
@@ -93,7 +111,8 @@ h1{font-size:28px;margin:0;letter-spacing:-.02em;font-weight:700}
 .headline .exc .el{font-size:12.5px;color:var(--mut)}
 
 .buckets{display:flex;gap:9px;margin:18px 0 14px;flex-wrap:wrap}
-.bk{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:9px 13px;display:flex;align-items:center;gap:9px;font-size:13px}
+.bk{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:9px 13px;display:flex;align-items:center;gap:9px;font-size:13px;cursor:pointer;transition:border-color .12s,background .12s,transform .12s}
+.bk:hover{border-color:#36506e;transform:translateY(-1px)}
 .bk.on{border-color:var(--blue);background:#0f1f30}
 .bk .bn{font-family:var(--mono);font-weight:700;font-size:15px}
 .bk .bd{width:8px;height:8px;border-radius:50%}
@@ -104,7 +123,9 @@ h1{font-size:28px;margin:0;letter-spacing:-.02em;font-weight:700}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut2);font-weight:600;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
 td{padding:11px 14px;border-bottom:1px solid #14202e}
-tr.rrow{cursor:pointer}tr.rrow:hover td{background:#13202d}
+tr.rrow{cursor:pointer;transition:background .12s}
+tr.rrow:hover td,tr.rrow:focus-visible td{background:#16293c}
+tr.rrow:hover td:first-child{box-shadow:inset 3px 0 0 var(--green)}
 .legdots{display:inline-flex;gap:4px}
 .ld{width:7px;height:7px;border-radius:50%;background:#2a3a4f}.ld.on{background:var(--green)}.ld.miss{background:#3a2228;box-shadow:inset 0 0 0 1px var(--red)}
 .amt{font-family:var(--mono);text-align:right;font-weight:600}
@@ -192,20 +213,26 @@ th[data-tip],.src[data-tip],.tipword{border-bottom:1px dotted #46586f;cursor:hel
 
   <!-- UPLOAD -->
   <div class="uploads" id="uploads">
-    <div class="uz" data-src="psp"><span class="ok" style="display:none">✓</span>
+    <div class="uz" data-src="psp">
+      <button class="rm" data-src="psp" type="button" aria-label="Remove file">×</button><span class="ok" style="display:none">✓ loaded</span>
       <div class="src" data-tip="Payment service provider — the rail client money flows in and out on (Skrill, Neteller, cards, bank).">Payment provider</div><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/></svg></div>
       <div class="hint">Skrill / Neteller / card settlement</div>
-      <div class="pick">drop CSV or browse</div>
+      <div class="pick">drop CSV or <u>browse</u></div>
+      <div class="drophint">↓ Drop to load</div>
       <input type="file" accept=".csv" data-src="psp"></div>
-    <div class="uz" data-src="crm"><span class="ok" style="display:none">✓</span>
+    <div class="uz" data-src="crm">
+      <button class="rm" data-src="crm" type="button" aria-label="Remove file">×</button><span class="ok" style="display:none">✓ loaded</span>
       <div class="src" data-tip="Your back-office system of record for every client deposit and withdrawal request.">CRM / back-office</div><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13M14 5l3 3-3 3"/><path d="M20 16H7M10 13l-3 3 3 3"/></svg></div>
       <div class="hint">deposits &amp; withdrawals export</div>
-      <div class="pick">drop CSV or browse</div>
+      <div class="pick">drop CSV or <u>browse</u></div>
+      <div class="drophint">↓ Drop to load</div>
       <input type="file" accept=".csv" data-src="crm"></div>
-    <div class="uz" data-src="ct"><span class="ok" style="display:none">✓</span>
+    <div class="uz" data-src="ct">
+      <button class="rm" data-src="ct" type="button" aria-label="Remove file">×</button><span class="ok" style="display:none">✓ loaded</span>
       <div class="src" data-tip="The trading platform (by Spotware) — where client balances are credited and debited.">cTrader</div><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 3v4M8 17v4M16 3v3M16 16v5"/><rect x="6" y="7" width="4" height="10" rx="1"/><rect x="14" y="6" width="4" height="10" rx="1"/></svg></div>
       <div class="hint">balance operations export</div>
-      <div class="pick">drop CSV or browse</div>
+      <div class="pick">drop CSV or <u>browse</u></div>
+      <div class="drophint">↓ Drop to load</div>
       <input type="file" accept=".csv" data-src="ct"></div>
   </div>
 
@@ -353,10 +380,20 @@ const files={psp:null,crm:null,ct:null};
 
 /* ---------- tooltips (plain-English on every term) ---------- */
 const tipbox=document.createElement('div');tipbox.id='tipbox';document.body.appendChild(tipbox);
-document.addEventListener('mouseover',e=>{const el=e.target.closest('[data-tip]');if(!el)return;tipbox.innerHTML=el.dataset.tip;tipbox.classList.add('on');posTip(e);});
-document.addEventListener('mousemove',e=>{if(tipbox.classList.contains('on'))posTip(e);});
-document.addEventListener('mouseout',e=>{if(e.target.closest('[data-tip]'))tipbox.classList.remove('on');});
-function posTip(e){const x=Math.min(e.clientX+14,innerWidth-tipbox.offsetWidth-14);const y=Math.min(e.clientY+18,innerHeight-tipbox.offsetHeight-14);tipbox.style.left=Math.max(8,x)+'px';tipbox.style.top=Math.max(8,y)+'px';}
+let tipEl=null;
+function showTip(el){tipbox.innerHTML=el.dataset.tip;tipbox.classList.add('on');tipEl=el;const r=el.getBoundingClientRect();
+  tipbox.style.left=Math.max(8,Math.min(r.left,innerWidth-tipbox.offsetWidth-10))+'px';
+  tipbox.style.top=Math.max(8,Math.min(r.bottom+8,innerHeight-tipbox.offsetHeight-10))+'px';}
+function hideTip(){tipbox.classList.remove('on');tipEl=null;}
+const HOVERABLE=matchMedia('(hover:hover) and (pointer:fine)').matches;
+if(HOVERABLE){   // desktop: show on hover
+  document.addEventListener('mouseover',e=>{const el=e.target.closest('[data-tip]');if(el)showTip(el);});
+  document.addEventListener('mouseout',e=>{const el=e.target.closest('[data-tip]');if(el)hideTip();});
+}
+document.addEventListener('click',e=>{   // phone + desktop: TAP a term to toggle its explanation
+  const el=e.target.closest('[data-tip]');
+  if(el){if(tipEl===el)hideTip();else showTip(el);}
+  else if(!e.target.closest('#tipbox'))hideTip();});
 const TIP={MATCHED:'Found in every system and the figures agree.',TOLERANCE:'Matched, but with a small expected difference — a processing fee, FX rounding, or a settlement-day gap.',REVIEW:'The reference matches but the amounts disagree by more than a fee — a person should check it.',DUPLICATE:'The same payment recorded or processed more than once.',SUSPICIOUS:'A pattern that may be a real loss or error (e.g. a payout sent twice) — flagged for urgent review.',UNMATCHED:'Exists in one system with no matching record in the others.'};
 
 /* ---------- CSV ---------- */
@@ -550,11 +587,25 @@ function setFile(src,name,text){
 function renderMapping(){
   const order=[['psp','Payment provider'],['crm','CRM / back-office'],['ct','cTrader']];
   const lbls={ref:'reference',client:'client',account:'account',amount:'amount',ccy:'currency',dir:'direction',date:'date'};
-  let any=false,h='';
-  order.forEach(([src,name])=>{if(!files[src])return;any=true;const cols=Object.keys(files[src].rows[0]||{});const m=MAP[src];
-    h+=`<div class="mapcard"><h4><span class="d"></span>${name}</h4>`+
-      Object.entries(lbls).map(([canon,_])=>{const from=m[canon];if(!from||!cols.includes(from))return'';return `<div class="mrow"><span class="from">${from}</span><span class="to">→ ${canon}</span></div>`;}).join('')+`</div>`;});
+  let any=false,h='',weak=false;
+  order.forEach(([src,name])=>{if(!files[src])return;any=true;const cols=Object.keys(files[src].rows[0]||{});const m=MAP[src];let mapped=0;
+    const rows=Object.entries(lbls).map(([canon,_])=>{const from=m[canon];if(!from||!cols.includes(from))return'';mapped++;return `<div class="mrow"><span class="from">${from}</span><span class="to">→ ${canon}</span></div>`;}).join('');
+    if(mapped<3)weak=true;
+    h+=`<div class="mapcard"><h4><span class="d"></span>${name}</h4>${rows||'<div class="mrow" style="color:var(--mut2)">columns not recognized</div>'}</div>`;});
+  if(weak)h+=`<div class="mapnote"><b>Heads-up:</b> some columns weren\'t recognized — this demo reads the sample\'s format. <b>That\'s expected with your own export</b>: in the real build we map to <i>your</i> columns and your process. To watch it run end-to-end right now, hit <b>Load TopFX sample set</b>.</div>`;
   $('#maps').innerHTML=h;$('#mapping').classList.toggle('on',any);
+}
+function clearFile(src){   // remove just one uploaded file (the × on a zone) without resetting the others
+  files[src]=null;
+  const uz=$(`.uz[data-src="${src}"]`);
+  uz.classList.remove('has');uz.querySelector('.ok').style.display='none';
+  uz.querySelector('.hint').style.display='';uz.querySelector('.pick').style.display='';
+  const fn=uz.querySelector('.fname');if(fn)fn.remove();const mt=uz.querySelector('.meta');if(mt)mt.remove();
+  uz.querySelector('input').value='';
+  const all=files.psp&&files.crm&&files.ct;
+  $('#runbtn').disabled=!all;$('#runbtn').classList.toggle('primary',!!all);$('#samplebtn').classList.toggle('primary',!all);
+  if(!(files.psp||files.crm||files.ct))$('#resetbtn').style.display='none';
+  renderMapping();
 }
 function reset(){files.psp=files.crm=files.ct=null;
   $$('.uz').forEach(uz=>{uz.classList.remove('has');uz.querySelector('.ok').style.display='none';uz.querySelector('.hint').style.display='';uz.querySelector('.pick').style.display='';const fn=uz.querySelector('.fname');if(fn)fn.remove();const mt=uz.querySelector('.meta');if(mt)mt.remove();uz.querySelector('input').value='';});
@@ -562,7 +613,7 @@ function reset(){files.psp=files.crm=files.ct=null;
   $('#mapping').classList.remove('on');$('#run').classList.remove('on');$('#results').classList.remove('on');$('#resetbtn').style.display='none';
 }
 
-let RESULTS=[],FILTER='all';
+let RESULTS=[],FILTER='all',VIEW=[],DIDX=0;
 const BUCKETS=[['all','All','grey'],['MATCHED','Matched','green'],['TOLERANCE','Tolerance','amber'],['REVIEW','Needs review','violet'],['DUPLICATE','Duplicate','amber'],['SUSPICIOUS','Suspicious','red'],['UNMATCHED','Unmatched','grey']];
 
 function run(){
@@ -609,6 +660,7 @@ function renderRows(){
   // order: high severity first, then unmatched/suspicious, then matched
   const sev={high:0,med:1,low:2,none:3};
   list.sort((a,b)=>(sev[a.severity]-sev[b.severity])|| a.confidence-b.confidence);
+  VIEW=list;   // current visible order — lets the drill-down step prev/next through exceptions
   $('#rows').innerHTML=list.map((r,i)=>{const [pc,pl]=PILL[r.verdict];const L=r.legs;
     const ref=(L.psp||L.crm||L.ct).ref||(L.ct?L.ct.id:'—');
     const cl=(L.psp||L.crm||{}).client||(L.ct?L.ct.account:'');
@@ -631,10 +683,12 @@ function legHtml(label,r,hlAmount){
 }
 function openDrill(r){const L=r.legs;const [pc,pl]=PILL[r.verdict];const danger=r.severity==='high';
   const ref=(L.psp||L.crm||L.ct).ref||(L.ct?L.ct.id:'');
+  DIDX=VIEW.indexOf(r);if(DIDX<0)DIDX=0;
+  const nav=VIEW.length>1?`<div class="dnav"><button onclick="navDrill(-1)" aria-label="previous exception">‹</button><span>${DIDX+1} / ${VIEW.length}</span><button onclick="navDrill(1)" aria-label="next exception">›</button></div>`:'';
   $('#drill').innerHTML=`
     <div class="dh"><div class="bid">${ref||'—'} · ${r.verdict.toLowerCase()}</div>
       <h2><span class="pill ${pc}" data-tip="${TIP[r.verdict]}">${pl}</span>${danger?'<span class="sevtag">HIGH SEVERITY</span>':''}</h2>
-      <button class="close" onclick="closeDrill()">×</button></div>
+      ${nav}<button class="close" onclick="closeDrill()" aria-label="close">×</button></div>
     <div class="db">
       ${danger?`<div class="sevbanner high"><span style="color:var(--red);font-weight:800;font-size:15px">!</span> <div><b>High-severity exception.</b> In production this would alert <b>your compliance desk</b> (email / Telegram / webhook). Simulated in the demo.</div></div>`:''}
       <div class="lbl">The three systems — do they agree?</div>
@@ -649,6 +703,7 @@ function openDrill(r){const L=r.legs;const [pc,pl]=PILL[r.verdict];const danger=
   $('#drill').classList.add('on');$('#scrim').classList.add('on');
 }
 function closeDrill(){$('#drill').classList.remove('on');$('#scrim').classList.remove('on');}
+function navDrill(d){if(VIEW.length<2)return;DIDX=(DIDX+d+VIEW.length)%VIEW.length;openDrill(VIEW[DIDX]);}
 
 /* export */
 function csvCell(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
@@ -669,9 +724,12 @@ $$('.uz input').forEach(inp=>inp.onchange=e=>{const f=e.target.files[0];if(!f)re
 $$('.uz').forEach(uz=>{['dragover','dragenter'].forEach(ev=>uz.addEventListener(ev,e=>{e.preventDefault();uz.classList.add('drag');}));
   ['dragleave','drop'].forEach(ev=>uz.addEventListener(ev,e=>{e.preventDefault();uz.classList.remove('drag');}));
   uz.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>setFile(uz.dataset.src,f.name,rd.result);rd.readAsText(f);});});
+$$('.uz .rm').forEach(b=>b.onclick=e=>{e.stopPropagation();e.preventDefault();clearFile(b.dataset.src);toast('Removed — drop a new file or load the sample');});
 $('#samplebtn').onclick=()=>{reset();setFile('psp','psp.csv (TopFX sample)',$('#s-psp').textContent);setFile('crm','crm.csv (TopFX sample)',$('#s-crm').textContent);setFile('ct','ctrader.csv (TopFX sample)',$('#s-ct').textContent);toast('Sample set loaded — hit Run reconciliation');};
 $('#runbtn').onclick=run;$('#resetbtn').onclick=reset;$('#exportbtn').onclick=exportCSV;$('#printbtn').onclick=()=>window.print();
-$('#scrim').onclick=closeDrill;document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrill();});
+$('#scrim').onclick=closeDrill;
+document.addEventListener('keydown',e=>{if(!$('#drill').classList.contains('on'))return;
+  if(e.key==='Escape')closeDrill();else if(e.key==='ArrowLeft')navDrill(-1);else if(e.key==='ArrowRight')navDrill(1);});
 $('#topdate').textContent='reconciliation · '+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 </script>
 </body></html>
