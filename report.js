@@ -18,7 +18,7 @@
 
   function buildReconReportDoc(d) {
     const now = d.generated || new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-    const tone = { green: '#1f8f4d', amber: '#b9791f', red: '#c0392b', violet: '#6d4aff', grey: '#5b6573' };
+    const tone = { green: '#1a7d43', amber: '#9a6410', red: '#c0392b', violet: '#6d4aff', grey: '#5b6573' };  // AA-contrast on white
     const rows = d.rows || [];
     const exc = rows.filter(r => r.flagged).sort((a, b) => (a.sevRank - b.sevRank) || (a.confidence - b.confidence));
     const high = exc.filter(r => r.severity === 'high');
@@ -30,8 +30,11 @@
       `<tr><td><span class="dot" style="background:${tone[b.tone] || tone.grey}"></span>${esc(b.label)}</td>
         <td class="r mono">${b.count}</td><td class="r mono">${b.pct}%</td><td class="mut">${esc(b.meaning)}</td></tr>`).join('');
 
-    const sysDots = r =>
-      `<span class="sys" title="payment provider · CRM · cTrader"><i class="${r.psp ? 'on' : ''}"></i><i class="${r.crm ? 'on' : ''}"></i><i class="${r.ct ? 'on' : ''}"></i></span>`;
+    const sysDots = r => {
+      const present = [r.psp && 'payment provider', r.crm && 'CRM', r.ct && 'cTrader'].filter(Boolean);
+      const lbl = 'Present in ' + (present.join(', ') || 'no system') + (present.length < 3 ? '; missing elsewhere' : '');
+      return `<span class="sys" role="img" aria-label="${esc(lbl)}" title="payment provider · CRM · cTrader"><i class="${r.psp ? 'on' : ''}"></i><i class="${r.crm ? 'on' : ''}"></i><i class="${r.ct ? 'on' : ''}"></i></span>`;
+    };
 
     const excCards = exc.map(r => `
       <div class="exc ${r.severity === 'high' ? 'hi' : ''}">
@@ -62,7 +65,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow">
 <title>Reconciliation Report · Concord · ${esc(now)}</title>
 <style>
-  :root{--ink:#14181f;--mut:#5b6573;--ln:#e3e7ec;--grn:#1f8f4d;--bg:#f6f8fa}
+  :root{--ink:#14181f;--mut:#5b6573;--ln:#e3e7ec;--grn:#1a7d43;--bg:#f6f8fa}
+  .bar button:focus-visible,a:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
   *{box-sizing:border-box}
   html,body{margin:0}
   body{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;font-size:14px}
@@ -106,6 +110,7 @@
   .bar{position:sticky;top:0;z-index:5;background:#0e1320;color:#fff;display:flex;gap:10px;align-items:center;justify-content:center;padding:11px;font-size:13px}
   .bar button{background:var(--grn);color:#fff;border:0;border-radius:8px;padding:9px 18px;font-weight:700;font-size:13.5px;cursor:pointer}
   .bar span{color:#9fb0c4}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   @media print{
     @page{size:A4;margin:13mm}
     body{background:#fff;font-size:11.5px}
@@ -124,7 +129,7 @@
       <h1>Reconciliation Report</h1>
       <div class="tag-demo">${d.live ? 'LIVE RUN · YOUR DATA, IN YOUR BROWSER' : 'ILLUSTRATIVE SAMPLE · TOPFX DEMO DATA'}</div>
     </div>
-    <div class="when">Generated<br><b>${esc(now)}</b><br><span style="color:#9aa4b0">Concord · reconciliation</span></div>
+    <div class="when">Generated<br><b>${esc(now)}</b><br><span style="color:#6b7682">Concord · reconciliation</span></div>
   </div>
   <div class="meta">Sources reconciled:&nbsp;&nbsp;${srcLine || '—'}</div>
 

@@ -3,33 +3,37 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'none'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232fd07e'/%3E%3Crect x='9' y='9' width='14' height='14' rx='3' fill='none' stroke='%23072012' stroke-width='2.4'/%3E%3C/svg%3E">
 <title>Concord — How it works &amp; our approach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#090d14;--bg2:#0c121c;--surface:#111a26;--surface2:#16212f;--line:#1d2a3a;--line2:#28384c;--ink:#e8eff8;--mut:#8a99ad;--mut2:#5e6e83;--green:#2fd07e;--amber:#f5b14c;--blue:#56a8ff;--mono:'JetBrains Mono',ui-monospace,monospace}
+:root{--bg:#090d14;--bg2:#0c121c;--surface:#111a26;--surface2:#16212f;--line:#1d2a3a;--line2:#28384c;--ink:#e8eff8;--mut:#8a99ad;--mut2:#8190a4;--green:#2fd07e;--amber:#f5b14c;--blue:#56a8ff;--violet:#9b8cff;--red:#f6685e;--mono:'JetBrains Mono',ui-monospace,monospace}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,'Segoe UI',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
 /* top nav */
 .topbar{position:sticky;top:0;z-index:20;background:rgba(9,13,20,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.topbar .in{max-width:840px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topbar .in{max-width:860px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .logo{width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,var(--green),#1d8f57);flex:0 0 auto}
 .mark{font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.13em}.mark b{color:var(--green)}
 .xnav{display:flex;gap:3px;margin-left:auto;flex-wrap:wrap}
 .xnav a{font-size:12.5px;color:var(--mut);padding:5px 11px;border-radius:6px;text-decoration:none;white-space:nowrap}
 .xnav a:hover{color:var(--ink);background:rgba(255,255,255,.05)}
 .xnav a.cur{color:var(--green);background:#14241b}
-.wrap{max-width:840px;margin:0 auto;padding:32px 20px 80px}
+.wrap{max-width:860px;margin:0 auto;padding:32px 20px 80px}
 h1{font-size:29px;margin:8px 0 8px;letter-spacing:-.02em;font-weight:700}
-.lede{color:var(--mut);font-size:15.5px;margin:0 0 8px;max-width:660px}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:26px 0 8px}
+.lede{color:var(--mut);font-size:15.5px;margin:0 0 8px;max-width:680px}
+.lede b{color:var(--ink)}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:24px 0 8px}
 .card{background:var(--surface);border:1px solid var(--line2);border-radius:13px;padding:18px;text-decoration:none;color:inherit;display:block;transition:.15s}
 .card:hover{border-color:var(--green);background:var(--surface2)}
 .card .k{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--green);font-weight:700}
 .card h3{margin:8px 0 4px;font-size:17px}.card p{margin:0;font-size:13px;color:var(--mut)}
 .card .go{margin-top:10px;font-size:13px;color:var(--green);font-weight:600}
-h2{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin:40px 0 4px;font-weight:700}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin:42px 0 4px;font-weight:700}
 h2 .n{font-family:var(--mono);color:var(--mut2);margin-right:8px}
+.sub2{color:var(--mut);font-size:13.5px;margin:2px 0 14px;max-width:680px}
 .sec{font-size:15px;color:#d2dbe7}.sec p{margin:10px 0}.sec b{color:var(--ink)}
 .big-quote{font-family:var(--mono);font-size:15px;color:var(--ink);background:var(--surface);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0}
 .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--mut);margin:14px 0}
@@ -47,7 +51,56 @@ h2 .n{font-family:var(--mono);color:var(--mut2);margin-right:8px}
 ul.q{margin:10px 0;padding-left:20px;font-size:14px;color:#cfd9e6}ul.q li{margin:5px 0}
 .foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut2);font-size:13px}
 .foot a{color:var(--blue);text-decoration:none}.foot a:hover{text-decoration:underline}
-@media(max-width:620px){.cards{grid-template-columns:1fr}}
+
+/* --- orientation strip (20-second read) --- */
+.orient{background:linear-gradient(180deg,#0f1a28,#0d1622);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;margin:24px 0 6px}
+.orient .ot{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);font-weight:700;margin-bottom:10px}
+.orient p{margin:0 0 12px;font-size:15px;color:#dde6f1}.orient p:last-child{margin-bottom:0}.orient b{color:#fff}
+.three{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.three .sys{flex:1;min-width:150px;background:#0c141f;border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+.three .sys .sn{font-size:12.5px;font-weight:600;color:var(--ink)}
+.three .sys .sd{font-size:11.5px;color:var(--mut2);margin-top:2px}
+.try{font-family:var(--mono);font-size:12.5px;color:var(--green);background:#0e1c15;border:1px solid #1d3a28;border-radius:8px;padding:9px 12px;display:inline-flex;align-items:center;gap:7px}
+
+/* --- walkthrough rows (action -> one sentence) --- */
+.walk{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:12px 0}
+.wr{display:grid;grid-template-columns:188px 1fr;gap:14px;padding:11px 15px;border-bottom:1px solid #14202e;align-items:baseline}
+.wr:last-child{border-bottom:0}
+.wr .a{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-weight:500}
+.wr .d{font-size:13.5px;color:var(--mut)}.wr .d b{color:#cdd8e6;font-weight:600}
+.wr.head{background:var(--bg2)}.wr.head .a{color:var(--green);text-transform:uppercase;letter-spacing:.05em;font-size:11px;font-weight:700}
+.wr.head .d{color:var(--mut2);text-transform:uppercase;letter-spacing:.05em;font-size:11px;font-weight:700}
+
+/* --- result-colour legend --- */
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.lg{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.lg .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;margin-top:5px}
+.lg .nm{font-size:13px;font-weight:600;color:var(--ink)}
+.lg .ex{font-size:12px;color:var(--mut);margin-top:1px;line-height:1.45}
+.dot.green{background:var(--green)}.dot.amber{background:var(--amber)}.dot.violet{background:var(--violet)}.dot.red{background:var(--red)}.dot.grey{background:var(--mut2)}
+
+/* --- dashboard section blocks --- */
+.dsec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin:11px 0}
+.dsec .dt{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.dsec .dt .ic{font-size:15px}
+.dsec .dt h4{margin:0;font-size:15px;font-weight:650}
+.dsec .dt .for{font-size:13px;color:var(--mut);margin:6px 0 0;width:100%}
+.tag{font-family:var(--mono);font-size:10px;font-weight:700;border-radius:5px;padding:2px 8px;letter-spacing:.03em}
+.tag.core{background:#10271a;color:var(--green);border:1px solid #1d3a28}
+.tag.opt{background:#241c0d;color:var(--amber);border:1px solid #4a3a1c}
+.btns{margin-top:11px;border-top:1px solid #14202e;padding-top:10px}
+.btn-row{display:grid;grid-template-columns:178px 1fr;gap:13px;padding:5px 0;align-items:baseline}
+.btn-row .bn{font-family:var(--mono);font-size:12px;color:var(--blue)}
+.btn-row .bd{font-size:12.5px;color:var(--mut);line-height:1.45}
+.note-line{font-size:12px;color:var(--mut2);margin-top:9px}
+
+@media(max-width:640px){
+  .cards{grid-template-columns:1fr}
+  .legend{grid-template-columns:1fr}
+  .wr{grid-template-columns:1fr;gap:2px;padding:10px 14px}
+  .wr.head{display:none}
+  .btn-row{grid-template-columns:1fr;gap:2px}
+}
 </style></head>
 <body>
 <div class="topbar"><div class="in">
@@ -57,7 +110,20 @@ ul.q{margin:10px 0;padding-left:20px;font-size:14px;color:#cfd9e6}ul.q li{margin
 
 <div class="wrap">
 <h1>How it works — and how we'd build it for you</h1>
-<p class="lede">A two-minute read: what you're looking at, what reconciliation actually is, how the demo reads data — and how the real system gets built around <b>your</b> systems and <b>your</b> process, not ours.</p>
+<p class="lede">Everything in the demo and the dashboard, explained so you can read it yourself: what each part <b>is</b>, and what each button <b>does</b>. Skim it in two minutes; go deeper only where you want to.</p>
+
+<!-- 20-SECOND ORIENTATION -->
+<div class="orient">
+  <div class="ot">Start here · 20 seconds</div>
+  <p><b>Concord</b> checks that one real money event agrees across the systems that recorded it — and surfaces every case where they don't. A <b>€1,000 client deposit</b> should appear in three places, telling the same story:</p>
+  <div class="three">
+    <div class="sys"><div class="sn">Payment provider</div><div class="sd">"we received €1,000"</div></div>
+    <div class="sys"><div class="sn">CRM / back-office</div><div class="sd">"deposit approved"</div></div>
+    <div class="sys"><div class="sn">cTrader</div><div class="sd">"balance credited"</div></div>
+  </div>
+  <p><b>Same event. Different systems. Same truth.</b> When they don't line up, that's a <b>break</b> — and the dangerous ones are obvious: <b>paid but never credited</b>, or <b>credited but never paid</b>.</p>
+  <p><span class="try">▶ To try it: open the Live demo → Load TopFX sample set → Run reconciliation.</span></p>
+</div>
 
 <div class="cards">
   <a class="card" href="index.html"><div class="k">▶ Try it</div><h3>Run the live demo</h3><p>Load the sample set (or drop in three CSVs) and watch it actually match the records and flag the mismatches — live, in your browser.</p><div class="go">Open the live demo →</div></a>
@@ -73,12 +139,40 @@ ul.q{margin:10px 0;padding-left:20px;font-size:14px;color:#cfd9e6}ul.q li{margin
 <p>The forex vocabulary is just the skin. Underneath, it's a <b>systems problem</b>: pull data from multiple sources, normalize it, match it, detect the exceptions, and give finance a clean trail to resolve and audit.</p>
 </div>
 
-<h2><span class="n">02</span> What the demo does</h2>
-<div class="sec">
-<p>It takes three exports — payment provider, CRM, cTrader — and runs a real matching cascade: exact reference, then a tolerant match (small fee / FX / settlement-timing differences), then a fuzzy match, and whatever's left becomes a typed exception. You get a one-screen summary, a filterable list, and a click-in view that shows all three systems side by side with the reason and a suggested next action — plus a one-click <b>reconciliation report</b> you can print or save as PDF, and a CSV of the full result set. Nothing is uploaded anywhere — it all runs in the browser.</p>
+<h2><span class="n">02</span> The live demo — what each button does</h2>
+<p class="sub2">A short tour of the <a href="index.html" style="color:var(--blue)">Live demo</a> page. Each control, one plain sentence — nothing is uploaded, it all runs in your browser.</p>
+<div class="walk">
+  <div class="wr head"><div class="a">Control</div><div class="d">What it does</div></div>
+  <div class="wr"><div class="a">Load TopFX sample set</div><div class="d">Drops in three ready-made files — one trading day across payment provider, CRM and cTrader — so you can watch it run with nothing to prepare.</div></div>
+  <div class="wr"><div class="a">👁 Preview the data</div><div class="d">Opens the three sample files as tables, <b>before</b> you run anything — so you can see exactly what goes in (including the deliberate mismatches it's meant to catch).</div></div>
+  <div class="wr"><div class="a">↓ psp / crm / ctrader .csv</div><div class="d">Downloads each sample file, so you can see the exact column format we read.</div></div>
+  <div class="wr"><div class="a">Drop CSV / browse</div><div class="d">Use your <b>own</b> three exports instead of the sample — any column names, comma or semicolon, EU or US number format.</div></div>
+  <div class="wr"><div class="a">× (on a file)</div><div class="d">Removes just that one file so you can swap it, without clearing the others.</div></div>
+  <div class="wr"><div class="a">Run reconciliation</div><div class="d">Runs the real matching cascade and reveals the result: a headline score, the buckets, and the full list.</div></div>
+  <div class="wr"><div class="a">Click any row</div><div class="d">Opens a side panel showing all three systems side by side, what happened and why, and the suggested next action. Use the <b>‹ ›</b> arrows (or keyboard) to step through the exceptions.</div></div>
+  <div class="wr"><div class="a">▤ Generate report (PDF)</div><div class="d">Builds a clean, dated reconciliation report — summary, exceptions, full ledger. Opens in a new tab; print or Save as PDF.</div></div>
+  <div class="wr"><div class="a">↓ Export data (CSV)</div><div class="d">Downloads the full result set as a CSV to open in Excel or feed another system.</div></div>
+  <div class="wr"><div class="a">Reset</div><div class="d">Clears everything and starts fresh.</div></div>
 </div>
 
-<h2><span class="n">03</span> The data the demo expects</h2>
+<p class="sub2" style="margin-top:18px">The result splits every transaction into <b>six buckets</b> — click a bucket to filter the list:</p>
+<div class="legend">
+  <div class="lg"><span class="dot green"></span><div><div class="nm">Matched</div><div class="ex">Found in every system and the figures agree. No action.</div></div></div>
+  <div class="lg"><span class="dot amber"></span><div><div class="nm">Tolerance</div><div class="ex">Matched, with a small expected gap — a fee, FX rounding, or settlement timing. Counts as reconciled.</div></div></div>
+  <div class="lg"><span class="dot violet"></span><div><div class="nm">Needs review</div><div class="ex">The reference ties them, but amounts disagree beyond a fee — a person should check it.</div></div></div>
+  <div class="lg"><span class="dot amber"></span><div><div class="nm">Duplicate</div><div class="ex">The same payment recorded or processed more than once.</div></div></div>
+  <div class="lg"><span class="dot red"></span><div><div class="nm">Suspicious</div><div class="ex">A possible real loss or error — e.g. a payout sent twice. Flagged for urgent review.</div></div></div>
+  <div class="lg"><span class="dot grey"></span><div><div class="nm">Unmatched</div><div class="ex">Exists in one system with no counterpart — where "paid, not credited" and "credited, not paid" live.</div></div></div>
+</div>
+<p class="note">On the sample day this lands at roughly <b style="color:var(--green)">73% reconciled</b> with <b style="color:var(--amber)">10 exceptions, 5 high-severity</b> — the numbers update live from whatever data you load.</p>
+
+<h2><span class="n">03</span> What the demo does under the hood</h2>
+<div class="sec">
+<p>It takes three exports — payment provider, CRM, cTrader — and runs a real matching cascade: exact reference, then a tolerant match (small fee / FX / settlement-timing differences), then a fuzzy match, and whatever's left becomes a typed exception. You get a one-screen summary, a filterable list, and a click-in view that shows all three systems side by side with the reason and a suggested next action — plus a one-click <b>reconciliation report</b> you can print or save as PDF, and a CSV of the full result set. Nothing is uploaded anywhere — it all runs in the browser.</p>
+<p class="note">Tolerances used in the demo (and set with you for the real build): rounding <b>€0.50</b> · processing fee up to <b>~2%</b> · FX drift <b>±0.15%</b> · settlement window <b>±2 days</b>.</p>
+</div>
+
+<h2><span class="n">04</span> The data the demo expects</h2>
 <div class="sec">
 <p>So you can see exactly what's going in, the demo reads three CSV exports with these shapes (the sample set follows them — and you can <b>preview or download the three sample files</b> right from the demo to see the exact format). It's already tolerant of real-world mess — <b>comma or semicolon files, European or US number formats</b> (<span class="note">1.234,56 or 1,234.56</span>)<b>, different date formats, and differently-named columns</b> all mapped to one common model:</p>
 <div class="schema"><div class="sh"><span class="d"></span>Payment provider</div><code>psp_txn_id, <b>payment_ref</b>, sender_name, account, value, ccy, type, processed_at, state</code></div>
@@ -87,19 +181,86 @@ ul.q{margin:10px 0;padding-left:20px;font-size:14px;color:#cfd9e6}ul.q li{margin
 <p class="note">The match keys are the shared payment reference, then amount + account + currency + value-date when no single reference exists.</p>
 </div>
 
+<h2><span class="n">05</span> The dashboard, section by section</h2>
+<p class="sub2">A tour of the <a href="modules.html" style="color:var(--blue)">Dashboard</a> — the wider system as a concept map (sample data). Each left-nav section: what it's for, and what its buttons do. <span style="color:var(--green)">Core</span> is the reconciliation machine shown live; <span style="color:var(--amber)">Optional</span> are possible modules, confirmed against your workflow before we build them.</p>
+
+<div class="dsec">
+  <div class="dt"><span class="ic">▣</span><h4>Dashboard</h4><span class="tag core">CORE</span>
+    <p class="for">The morning health screen — one glance tells you the night reconciled cleanly or where to look first.</p></div>
+  <div class="btns">
+    <div class="btn-row"><div class="bn">KPIs row</div><div class="bd">Open breaks, source pairs compared, the match cascade — the day at a glance.</div></div>
+    <div class="btn-row"><div class="bn">Reconciliation by stream</div><div class="bd">Each pair of systems (funding, bank↔ledger, hedge…) with its % matched and what's still broken.</div></div>
+    <div class="btn-row"><div class="bn">Live alerts</div><div class="bd">A real-time feed of what just happened — a double withdrawal, a pending deposit, a new learned rule.</div></div>
+    <div class="btn-row"><div class="bn">Client-money segregation</div><div class="bd">A card for the CySEC daily proof — marked <span class="tag opt">OPTIONAL</span>, built to your template on your real balances.</div></div>
+    <div class="btn-row"><div class="bn">↓ Export day</div><div class="bd">Opens the day's reconciliation report — print or Save as PDF.</div></div>
+    <div class="btn-row"><div class="bn">Run reconciliation ▸</div><div class="bd">Re-runs the match cascade across all sources (simulated on the sample day).</div></div>
+  </div>
+</div>
+
+<div class="dsec">
+  <div class="dt"><span class="ic">⚑</span><h4>Breaks queue</h4><span class="tag core">CORE</span>
+    <p class="for">The worklist of every mismatch — what to resolve, in priority order. Filter the chips by type (suspicious · missing · timing · FX/fee · duplicate).</p></div>
+  <div class="btns">
+    <div class="btn-row"><div class="bn">Row checkbox / select-all</div><div class="bd">Tick individual breaks, or the header box to select everything in view.</div></div>
+    <div class="btn-row"><div class="bn">⤿ Select auto-resolvable</div><div class="bd">Auto-ticks the ones that clear within tolerance — timing, FX and fee gaps — ready to clear in one go.</div></div>
+    <div class="btn-row"><div class="bn">✓ Bulk match</div><div class="bd">Matches the ticked breaks at once. Each match is sent for four-eyes (maker-checker) approval and written to the audit log.</div></div>
+    <div class="btn-row"><div class="bn">↓ Export</div><div class="bd">Downloads the breaks currently shown as a CSV.</div></div>
+    <div class="btn-row"><div class="bn">Click a break</div><div class="bd">Opens the two sides that should agree, the proposed cause, similar past breaks, and four resolve actions: <b>Match · Adjust · Escalate · Write-off</b> — all maker-checker gated and audit-logged.</div></div>
+  </div>
+</div>
+
+<div class="dsec">
+  <div class="dt"><span class="ic">▤</span><h4>Reports</h4><span class="tag core">CORE</span> <span style="font-size:12px;color:var(--mut2)">(some cards optional)</span>
+    <p class="for">The outputs — daily proof, the regulatory pack, management trends. Each card is one click.</p></div>
+  <div class="btns">
+    <div class="btn-row"><div class="bn">Daily reconciliation</div><div class="bd">Generates the real, dated PDF report — matched vs break by source-pair and currency, with the cascade audit.</div></div>
+    <div class="btn-row"><div class="bn">Client-money segregation</div><div class="bd"><span class="tag opt">OPTIONAL</span> The CySEC report — segregated funds vs client liability — built to your template.</div></div>
+    <div class="btn-row"><div class="bn">Audit pack</div><div class="bd">The evidence export for an auditor. The full build adds maker-checker sign-off + an immutable hash per line.</div></div>
+    <div class="btn-row"><div class="bn">Breaks trend</div><div class="bd">Opens the breaks queue — break value over time, time-to-resolve, auto-match rate.</div></div>
+    <div class="btn-row"><div class="bn">Exposure history</div><div class="bd">Opens the exposure screen — unhedged exposure over time vs thresholds.</div></div>
+    <div class="btn-row"><div class="bn">IB &amp; partner recon</div><div class="bd"><span class="tag opt">OPTIONAL</span> Commission due vs actually paid, per partner.</div></div>
+  </div>
+</div>
+
+<div class="dsec">
+  <div class="dt"><span class="ic">⇄</span><h4>Sources</h4><span class="tag core">CORE</span>
+    <p class="for">The systems Concord reads — one adapter each (cTrader, PSPs, banks, the LP, CRM, GL), all normalised to one model. <span style="color:var(--amber)">Illustrative — your real stack to be confirmed.</span></p></div>
+  <div class="btns">
+    <div class="btn-row"><div class="bn">+ Add source</div><div class="bd">In the full build, new adapters (a PSP, a second bank, the GL) are connected during onboarding.</div></div>
+  </div>
+</div>
+
+<div class="dsec">
+  <div class="dt"><span class="ic">⚙</span><h4>Matching rules</h4><span class="tag core">CORE</span>
+    <p class="for">How a match is decided — a visible cascade, every result explainable. Thresholds are set <b>with you</b>.</p></div>
+  <div class="btns">
+    <div class="btn-row"><div class="bn">The cascade</div><div class="bd">exact reference → tolerance (fee €0.50 · ±2-day settlement) → FX (±0.15%) → fuzzy → anything left becomes a typed break.</div></div>
+    <div class="btn-row"><div class="bn">Learning matcher</div><div class="bd">Every manual match an analyst makes is proposed back as a governed, human-approved rule — so the auto-match rate rises and the queue shrinks over time.</div></div>
+  </div>
+</div>
+
+<div class="dsec">
+  <div class="dt"><span class="ic">◈</span><h4>Exposure</h4><span class="tag opt">OPTIONAL</span>
+    <p class="for">A risk / dealing-desk module: broker net (B-book) vs hedged at the LP (A-book). Included only if it fits your workflow — figures shown are sample data.</p></div>
+  <div class="btns">
+    <div class="btn-row"><div class="bn">Net vs hedged by symbol</div><div class="bd">Per instrument: how much of the net position is hedged, with anything over threshold flagged. Not back-office reconciliation — a separate module.</div></div>
+  </div>
+  <p class="note-line">Glossary covers every term here — <a href="glossary.html" style="color:var(--blue)">A-book/B-book, LP, FIX</a> — in plain English.</p>
+</div>
+
 <div class="callout">
-<div class="t">04 · The real build works the other way around</div>
+<div class="t">06 · The real build works the other way around</div>
 <p><b>You don't adapt to the demo — the system adapts to you.</b> In production you give us your <b>actual</b> exports, in whatever format your systems already produce. We map <b>your</b> real data, define the matching rules that fit how <b>you</b> reconcile today, and then optimize that process inside the system.</p>
 <p>We don't make you change how you work. We encode how you work — and make it faster, safer, and continuous: <b>"show us your systems, your exports, and what you check by hand today. We map the flow, define the matching rules, and build the tool that finds the mismatches."</b></p>
 <p style="margin-bottom:0">The path is deliberately de-risked: <b>discovery</b> (map your real flow) → <b>MVP on your worst stream</b>, proving value on your own data → <b>expand</b> the other streams → <b>optimize</b> (the system keeps learning your patterns, so the breaks queue shrinks over time).</p>
 </div>
 
-<h2><span class="n">05</span> Core now, optional later — confirmed with you</h2>
+<h2><span class="n">07</span> Core now, optional later — confirmed with you</h2>
 <div class="sec">
 <p>What you see running is the <b style="color:var(--green)">core</b>: sources → match → breaks → review → report → audit. Everything beyond it — exposure / risk reconciliation, client-money segregation reporting, IB &amp; partner commissions, bundled audit packs — is a <b style="color:var(--amber)">possible module</b>, marked clearly as <i>to be confirmed against your workflow</i>. We'd rather map your real process than show you numbers we invented. See the <a href="modules.html" style="color:var(--blue)">dashboard</a> for the full map, and the <a href="glossary.html" style="color:var(--blue)">glossary</a> for every term in plain English.</p>
 </div>
 
-<h2><span class="n">06</span> What we'd need from you to scope it</h2>
+<h2><span class="n">08</span> What we'd need from you to scope it</h2>
 <div class="sec">
 <ul class="q">
 <li>Platform — cTrader confirmed? Open API / a read-only DB replica?</li>

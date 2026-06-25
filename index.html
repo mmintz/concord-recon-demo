@@ -3,6 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232fd07e'/%3E%3Crect x='9' y='9' width='14' height='14' rx='3' fill='none' stroke='%23072012' stroke-width='2.4'/%3E%3C/svg%3E">
 <title>Concord — Live Reconciliation · TopFX</title>
 <script src="report.js"></script>
@@ -12,7 +13,7 @@
 <style>
 :root{
   --bg:#090d14;--bg2:#0c121c;--surface:#111a26;--surface2:#16212f;--raise:#1a2636;
-  --line:#1d2a3a;--line2:#28384c;--ink:#e8eff8;--mut:#8a99ad;--mut2:#5e6e83;
+  --line:#1d2a3a;--line2:#28384c;--ink:#e8eff8;--mut:#8a99ad;--mut2:#8190a4;
   --green:#2fd07e;--green2:#1f9c5c;--amber:#f5b14c;--red:#f6685e;--blue:#56a8ff;--violet:#9b8cff;
   --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
 }
@@ -83,6 +84,7 @@ h1{font-size:28px;margin:0;letter-spacing:-.02em;font-weight:700}
 .ptbl th{position:sticky;top:0;background:var(--surface2);color:var(--mut2);text-transform:uppercase;font-size:10px;letter-spacing:.03em;text-align:left;padding:7px 9px;white-space:nowrap;border-bottom:1px solid var(--line)}
 .ptbl td{padding:6px 9px;border-bottom:1px solid #131f2c;white-space:nowrap;color:var(--ink)}
 .ptbl tr:hover td{background:#13202d}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 .controls{display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
 .btn{border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:transform .12s,border-color .12s,background .12s}
@@ -207,6 +209,7 @@ th[data-tip],.src[data-tip],.tipword{border-bottom:1px dotted #46586f;cursor:hel
 @media print{.bar,.controls,.buckets,.uploads,.mapping,.run,.privacy,.foot{display:none!important}body{background:#fff;color:#000}}
 </style></head>
 <body>
+<noscript><div style="padding:14px 18px;background:#241c0d;color:#e8d3a8;border-bottom:1px solid #4a3a1c;font-family:-apple-system,'Segoe UI',sans-serif;font-size:14px">This interactive demo needs JavaScript enabled to run the reconciliation in your browser.</div></noscript>
 
 <div class="bar"><div class="row">
   <div class="logo"></div><div class="mark">CON<b>CORD</b></div>
@@ -596,6 +599,7 @@ function nearest(p,pool){let best=null,bs=0;pool.forEach(c=>{const s=0.5*Math.ma
 function mk(verdict,legs,confidence,primary,why,action,severity){return{verdict,legs,confidence,primary,why,action,severity,velocity:false};}
 function money(r){return cur(r.ccy)+r.amount.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function cur(c){return({USD:'$',EUR:'€',GBP:'£'})[c]||(c+' ');}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}  // user CSV values never reach innerHTML raw
 
 /* ---------- UI ---------- */
 function setFile(src,name,text){
@@ -699,11 +703,13 @@ function renderRows(){
     const ref=(L.psp||L.crm||L.ct).ref||(L.ct?L.ct.id:'—');
     const cl=(L.psp||L.crm||{}).client||(L.ct?L.ct.account:'');
     const a=L.psp||L.crm||L.ct;
+    const present=[L.psp&&'payment provider',L.crm&&'CRM',L.ct&&'cTrader'].filter(Boolean);
+    const dotsLabel='Present in '+(present.join(', ')||'no system')+(present.length<3?'; missing elsewhere':'');
     return `<tr class="rrow" tabindex="0" role="button" data-i="${RESULTS.indexOf(r)}">
-      <td class="num">${ref||'—'}</td>
-      <td>${cl||'—'}</td>
+      <td class="num">${esc(ref)||'—'}</td>
+      <td>${esc(cl)||'—'}</td>
       <td class="amt">${money(a)}</td>
-      <td><span class="legdots" data-tip="Filled = the record is present in that system, hollow = missing. Order: payment provider · CRM · cTrader."><span class="ld ${L.psp?'on':'miss'}"></span><span class="ld ${L.crm?'on':'miss'}"></span><span class="ld ${L.ct?'on':'miss'}"></span></span></td>
+      <td><span class="legdots" role="img" aria-label="${dotsLabel}" data-tip="Filled = the record is present in that system, hollow = missing. Order: payment provider · CRM · cTrader."><span class="ld ${L.psp?'on':'miss'}"></span><span class="ld ${L.crm?'on':'miss'}"></span><span class="ld ${L.ct?'on':'miss'}"></span></span></td>
       <td><span class="pill ${pc}" data-tip="${TIP[r.verdict]}">${pl}</span>${r.severity==='high'?'<span class="sevtag" data-tip="High severity — money is at risk and this needs urgent human review.">HIGH</span>':''}</td>
       <td>${r.verdict==='UNMATCHED'?'<span class="conf" style="color:var(--mut2)" data-tip="No matching record exists, so there is nothing to score — it simply needs investigation.">no match</span>':`<span class="conf"><span class="cbar"><i style="width:${r.confidence}%"></i></span>${r.confidence}%</span>`}</td></tr>`;}).join('');
   $$('#rows .rrow').forEach(tr=>{const open=()=>openDrill(RESULTS[+tr.dataset.i]);tr.onclick=open;
@@ -713,14 +719,14 @@ function legHtml(label,r,hlAmount){
   if(!r)return `<div class="leg miss"><div class="lt"><span class="d"></span>${label}</div><div class="missnote">no record</div></div>`;
   const rows=[['account',r.account],['reference',r.ref||'(blank)'],['amount',money(r)],['date',r.date],['status',r.status||'—'],['source id',r.id]];
   return `<div class="leg"><div class="lt"><span class="d"></span>${label}</div>`+
-    rows.map(([k,v])=>`<div class="kv ${hlAmount&&k==='amount'?'hl':''}"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('')+`</div>`;
+    rows.map(([k,v])=>`<div class="kv ${hlAmount&&k==='amount'?'hl':''}"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`).join('')+`</div>`;
 }
 function openDrill(r){const L=r.legs;const [pc,pl]=PILL[r.verdict];const danger=r.severity==='high';
   const ref=(L.psp||L.crm||L.ct).ref||(L.ct?L.ct.id:'');
   DIDX=VIEW.indexOf(r);if(DIDX<0)DIDX=0;
   const nav=VIEW.length>1?`<div class="dnav"><button onclick="navDrill(-1)" aria-label="previous exception">‹</button><span>${DIDX+1} / ${VIEW.length}</span><button onclick="navDrill(1)" aria-label="next exception">›</button></div>`:'';
   $('#drill').innerHTML=`
-    <div class="dh"><div class="bid">${ref||'—'} · ${r.verdict.toLowerCase()}</div>
+    <div class="dh"><div class="bid">${esc(ref)||'—'} · ${r.verdict.toLowerCase()}</div>
       <h2><span class="pill ${pc}" data-tip="${TIP[r.verdict]}">${pl}</span>${danger?'<span class="sevtag">HIGH SEVERITY</span>':''}</h2>
       ${nav}<button class="close" onclick="closeDrill()" aria-label="close">×</button></div>
     <div class="db">
@@ -729,8 +735,8 @@ function openDrill(r){const L=r.legs;const [pc,pl]=PILL[r.verdict];const danger=
       <div class="legs">${legHtml('Payment provider',L.psp,r.verdict==='REVIEW')}${legHtml('CRM',L.crm,r.verdict==='REVIEW')}${legHtml('cTrader',L.ct,r.verdict==='REVIEW')}</div>
       <div class="aibox ${danger?'danger':''}">
         <div class="at">◆ Concord · what happened &amp; why</div>
-        <div class="why">${r.why}</div>
-        <div class="act"><div class="al">Suggested next action</div>${r.action}</div>
+        <div class="why">${esc(r.why)}</div>
+        <div class="act"><div class="al">Suggested next action</div>${esc(r.action)}</div>
         ${r.verdict==='UNMATCHED'?'<div class="conf2" style="color:var(--mut2)">no counterpart to score against — needs investigation</div>':`<div class="conf2">confidence <div class="cb"><i style="width:${r.confidence}%"></i></div> ${r.confidence}%</div>`}
       </div>
     </div>`;
@@ -808,7 +814,7 @@ function previewSamples(){
     let rows=[];try{rows=parseCSV($('#s-'+src).textContent);}catch(e){}
     const cols=Object.keys(rows[0]||{});
     h+=`<div style="margin:0 0 8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font-size:13.5px">${label}</b><span style="color:var(--mut2);font-family:var(--mono);font-size:11.5px">${name} · ${rows.length} rows · ${cols.length} cols</span><button class="schip" style="margin-left:auto" onclick="dlSample('${src}')">↓ download</button></div>
-      <div style="overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin-bottom:6px"><table class="ptbl"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.slice(0,7).map(r=>`<tr>${cols.map(c=>`<td>${r[c]==null?'':String(r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+      <div style="overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin-bottom:6px"><table class="ptbl"><thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${rows.slice(0,7).map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
       ${rows.length>7?`<div style="color:var(--mut2);font-size:11.5px;margin:0 0 18px">+ ${rows.length-7} more rows — download to see all</div>`:'<div style="margin-bottom:18px"></div>'}`;
   });
   h+=`</div>`;

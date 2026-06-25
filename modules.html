@@ -3,6 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Concord — Reconciliation · TopFX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +14,7 @@
 :root{
   --bg:#090d14; --bg2:#0c121c; --surface:#111a26; --surface2:#16212f; --raise:#1a2636;
   --line:#1d2a3a; --line2:#28384c;
-  --ink:#e8eff8; --mut:#8a99ad; --mut2:#5e6e83;
+  --ink:#e8eff8; --mut:#8a99ad; --mut2:#8190a4;
   --green:#2fd07e; --green2:#1f9c5c; --amber:#f5b14c; --red:#f6685e; --blue:#56a8ff; --violet:#9b8cff;
   --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
 }
@@ -132,6 +133,9 @@ button{font-family:inherit}
 .tbl tr.sel td{background:#13241b}.tbl tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--green)}
 .tbl tr.resolving{animation:resolve .5s ease forwards}@keyframes resolve{to{opacity:0;transform:translateX(14px)}}
 .tbl td.cb{text-align:center}
+#s-breaks .card{overflow-x:auto}
+.nav a:focus-visible,.rcard:focus-visible,.fchip:focus-visible,.tbl tr.brk:focus-visible,.btn:focus-visible,.act:focus-visible,.cbx:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
 /* filters */
 .filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
@@ -215,10 +219,13 @@ button{font-family:inherit}
   .app{grid-template-columns:1fr;grid-template-rows:56px auto 1fr;grid-template-areas:"brand" "top" "main"}
   .nav{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.rgrid{grid-template-columns:1fr}
   .topbar{overflow-x:auto}
+  .h{flex-wrap:wrap}.h .right{margin-left:auto;flex-wrap:wrap}
+  .filters{overflow-x:auto}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
+<noscript><div style="padding:14px 18px;background:#241c0d;color:#e8d3a8;font-family:Inter,-apple-system,sans-serif;font-size:14px">This dashboard concept map needs JavaScript enabled.</div></noscript>
 <div class="app">
   <div class="brand"><div class="logo"></div><div class="wordmark">CON<b>CORD</b></div></div>
   <div class="topbar">
@@ -325,7 +332,7 @@ button{font-family:inherit}
         <div class="cb" style="font-size:13px;color:var(--mut);line-height:1.9;font-family:var(--mono)">
           1 · exact — match on <b style="color:var(--ink)">psp_ref = crm_ref</b>, amount, currency<br>
           2 · tolerance — amount ±€0.50 (fees), value-date window <b style="color:var(--ink)">±2 days</b> (T+2 settlement)<br>
-          3 · fx — convert at value-date ECB rate, tolerance <b style="color:var(--ink)">±0.15%</b><br>
+          3 · fx — convert at the value-date reference rate, tolerance <b style="color:var(--ink)">±0.15%</b><br>
           4 · fuzzy — beneficiary + amount + 24h window (probabilistic, ≥0.85)<br>
           5 · residue → <b style="color:var(--amber)">break</b>, typed + queued
         </div></div>
@@ -468,7 +475,7 @@ function updateCounts(){
 }
 function renderBreaks(){
   const list=visItems();
-  $('#brows').innerHTML=list.map(b=>`<tr class="brk ${b.selected?'sel':''}" data-id="${b.id}">
+  $('#brows').innerHTML=list.map(b=>`<tr class="brk ${b.selected?'sel':''}" data-id="${b.id}" tabindex="0" role="button">
     <td class="cb"><input type="checkbox" class="cbx rowcb" ${b.selected?'checked':''} aria-label="Select ${b.id}"></td>
     <td class="mono">${b.id}</td><td>${b.pair}</td>
     <td><span class="pill ${pillClass(b.type)}">${b.typ}</span></td>
@@ -554,6 +561,7 @@ function openDrill(b){
       <div class="four">🔒 every action recorded in the immutable audit log · second-approver required</div>
     </div>`;
   $('#drill').classList.add('on');$('#scrim').classList.add('on');
+  const cb=$('#drill .close');if(cb)cb.focus();
 }
 function closeDrill(){$('#drill').classList.remove('on');$('#scrim').classList.remove('on');}
 
@@ -619,5 +627,15 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
   document.addEventListener('mouseover',e=>{const el=e.target.closest('[data-tip]');if(el)showTip(el);});
   document.addEventListener('mouseout',e=>{if(e.target.closest('[data-tip]'))hideTip();});
 }
+
+// ---- keyboard accessibility (parity with the live demo) ----
+$$('#nav a[data-screen], .rcard, .fchip').forEach(el=>{el.tabIndex=0;if(!el.getAttribute('role'))el.setAttribute('role','button');});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeDrill();return;}
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  if(e.target.closest('input,button,select,textarea,a[href]'))return;   // let native controls handle their own keys
+  const a=e.target.closest('[data-screen],.rcard,.fchip,.brk');
+  if(a){e.preventDefault();a.click();}
+});
 </script>
 </body></html>
